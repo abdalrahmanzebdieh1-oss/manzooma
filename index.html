@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>مَنظومة تك | Manzooma Tech - حلول رقمية ذكية للمطاعم والكافيهات</title>
+  <meta name="description" content="المنيو الإلكتروني التفاعلي، الكروت الذكية NFC، وستاندات QR لزيادة مبيعات مطعمك وتوفير تكاليف الطباعة.">
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { cairo: ['Cairo', 'sans-serif'] },
+          colors: {
+            navy: { 800: '#1E293B', 900: '#0F172A', 950: '#020617' },
+            emerald: { 500: '#10B981', 600: '#059669' },
+            amber: { 500: '#F59E0B', 600: '#EA580C' }
+          }
+        }
+      }
+    }
+  </script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <style>
+    body { font-family: 'Cairo', sans-serif; }
+    .glass-nav { background: rgba(15, 23, 42, 0.92); backdrop-filter: blur(12px); }
+    .hero-pattern {
+      background-color: #0F172A;
+      background-image: radial-gradient(#1E293B 1px, transparent 1px);
+      background-size: 24px 24px;
+    }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 antialiased">
+
+  <!-- 1. NAVBAR -->
+  <nav class="fixed top-0 w-full z-50 glass-nav border-b border-slate-800 text-white">
+    <div class="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
+      <a href="#" class="flex items-center gap-2.5">
+        <div class="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
+          <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+            <polygon points="12 2 21 7 21 17 12 22 3 17 3 7 12 2"></polygon>
+            <circle cx="12" cy="12" r="3" fill="#EA580C" stroke="none"></circle>
+          </svg>
+        </div>
+        <div>
+          <span class="font-black text-lg tracking-tight block leading-none">مَنظومة <span class="text-emerald-400">تك</span></span>
+          <span class="text-[10px] text-slate-400 font-bold tracking-widest uppercase">MANZOOMA TECH</span>
+        </div>
+      </a>
+
+      <div class="hidden md:flex items-center gap-7 text-sm font-bold text-slate-300">
+        <a href="#services" class="hover:text-emerald-400 transition-colors">الخدمات</a>
+        <a href="#demos" class="hover:text-emerald-400 transition-colors">نماذج حية</a>
+        <a href="#pricing" class="hover:text-emerald-400 transition-colors">الأسعار والباقات</a>
+        <a href="#faq" class="hover:text-emerald-400 transition-colors">الأسئلة الشائعة</a>
+      </div>
+
+      <a id="navWhatsappBtn" href="https://wa.me/201000000000" target="_blank" class="bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-extrabold text-xs md:text-sm px-4 py-2.5 rounded-xl transition-all flex items-center gap-1.5 shadow-lg shadow-emerald-500/20">
+        <i data-lucide="message-circle" class="w-4 h-4"></i>
+        <span>اطلب استشارتك</span>
+      </a>
+    </div>
+  </nav>
+
+  <!-- 2. HERO SECTION -->
+  <header class="hero-pattern text-white pt-28 pb-20 px-4 relative overflow-hidden">
+    <div class="max-w-6xl mx-auto grid md:grid-cols-2 gap-12 items-center">
+      <div class="space-y-6 text-center md:text-right">
+        <div class="inline-flex items-center gap-2 bg-slate-800/80 border border-slate-700 px-3.5 py-1.5 rounded-full text-xs font-bold text-emerald-400">
+          <span id="syncDot" class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+          <span>نظام التشغيل الذكي للمطاعم والكافيهات</span>
+        </div>
+        
+        <h1 class="text-3xl md:text-5xl font-black leading-tight">
+          ودّع تكاليف طباعة المنيو.. وحوّل مطعمك إلى <span class="text-transparent bg-clip-text bg-gradient-to-l from-emerald-400 to-amber-500">تجربة رقمية متكاملة</span>
+        </h1>
+        
+        <p class="text-slate-300 text-sm md:text-base leading-relaxed max-w-xl mx-auto md:mx-0">
+          منيو إلكتروني تفاعلي يعمل عبر QR، يستقبل طلبات الصالة والتوصيل مباشرة على واتساب الكاشير، مع لوحة تحكم سحابية لتعديل الأسعار في ثانية واحدة.
+        </p>
+
+        <div class="flex flex-col sm:flex-row gap-3 justify-center md:justify-start pt-2">
+          <a href="#demos" class="bg-amber-600 hover:bg-amber-500 text-white font-extrabold px-6 py-3.5 rounded-xl transition-all flex items-center justify-center gap-2 shadow-lg shadow-amber-600/25">
+            <i data-lucide="smartphone" class="w-5 h-5"></i>
+            <span>جرّب النماذج الحية الآن</span>
+          </a>
+          <a href="#pricing" class="bg-slate-800 hover:bg-slate-700 border border-slate-700 text-white font-bold px-6 py-3.5 rounded-xl transition-all flex items-center justify-center gap-2">
+            <span>استعرض الباقات والأسعار</span>
+          </a>
+        </div>
+
+        <div class="grid grid-cols-3 gap-4 pt-6 border-t border-slate-800/80 text-center md:text-right">
+          <div>
+            <p class="text-2xl font-black text-emerald-400">+30%</p>
+            <p class="text-xs text-slate-400">زيادة في متوسط الفاتورة</p>
+          </div>
+          <div>
+            <p class="text-2xl font-black text-amber-500">0 ج.م</p>
+            <p class="text-xs text-slate-400">تكاليف إعادة طباعة ورقية</p>
+          </div>
+          <div>
+            <p class="text-2xl font-black text-white">1 ثانية</p>
+            <p class="text-xs text-slate-400">لتحديث الأسعار سحابياً</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Visual Mockup -->
+      <div class="relative mx-auto w-full max-w-sm">
+        <div class="absolute -inset-4 bg-gradient-to-tr from-emerald-500/20 to-amber-500/20 rounded-3xl blur-2xl"></div>
+        <div class="relative bg-slate-900 border-2 border-slate-700 rounded-3xl p-4 shadow-2xl">
+          <div class="bg-slate-950 rounded-2xl p-4 space-y-4 border border-slate-800">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+              <div class="flex items-center gap-2">
+                <div class="w-8 h-8 rounded-lg bg-amber-600 flex items-center justify-center font-black text-white">🍔</div>
+                <div>
+                  <h3 class="text-xs font-bold text-white">برجر ستيشن - Burger Station</h3>
+                  <span class="text-[10px] text-emerald-400">● مفتوح الآن</span>
+                </div>
+              </div>
+              <span class="bg-slate-800 text-[10px] px-2 py-1 rounded-md text-slate-300">طاولة #4</span>
+            </div>
+
+            <div class="bg-slate-900 p-3 rounded-xl border border-slate-800 flex justify-between items-center">
+              <div>
+                <span class="text-[9px] bg-amber-600/20 text-amber-400 px-1.5 py-0.5 rounded font-bold">الأكثر طلباً 🔥</span>
+                <h4 class="text-xs font-bold text-white mt-1">دبل سماش برجر بالجبن</h4>
+                <p class="text-xs font-black text-emerald-400 mt-1">165 ج.م</p>
+              </div>
+              <button class="bg-emerald-500 text-slate-950 font-black text-xs px-3 py-1.5 rounded-lg">+ إضافة</button>
+            </div>
+
+            <div class="bg-emerald-600 text-white p-3 rounded-xl flex justify-between items-center text-xs font-bold shadow-lg">
+              <span class="flex items-center gap-1.5"><i data-lucide="message-circle" class="w-4 h-4"></i> إرسال الطلب لواتساب</span>
+              <span>330 ج.م</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- 3. SERVICES SECTION -->
+  <section id="services" class="py-20 px-4 max-w-6xl mx-auto">
+    <div class="text-center max-w-2xl mx-auto mb-14 space-y-3">
+      <span class="text-xs font-extrabold text-amber-600 uppercase tracking-wider">حلول متكاملة لقطاع الضيافة</span>
+      <h2 class="text-2xl md:text-4xl font-black text-navy-900">كل ما يحتاجه مطعمك للتحول الرقمي</h2>
+      <p class="text-sm text-slate-500">نجمع لك بين سرعة البرمجيات السحابية وأناقة المنتجات الذكية الملموسة على طاولات عملائك.</p>
+    </div>
+
+    <div class="grid md:grid-cols-3 gap-6">
+      <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm hover:shadow-xl transition-all space-y-4">
+        <div class="w-12 h-12 rounded-2xl bg-emerald-500/10 text-emerald-600 flex items-center justify-center">
+          <i data-lucide="qr-code" class="w-6 h-6"></i>
+        </div>
+        <h3 class="text-lg font-black text-navy-900">المنيو الإلكتروني التفاعلي</h3>
+        <p class="text-xs text-slate-600 leading-relaxed">
+          تطبيق ويب فائق السرعة يفتح بدون تحميل. يدعم تخصيص الوجبات، حساب رسوم التوصيل حسب المنطقة، كوبونات الخصم، وإرسال الفاتورة منسقة لواتساب.
+        </p>
+        <ul class="space-y-2 text-xs font-semibold text-slate-700 pt-2 border-t border-slate-100">
+          <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-500"></i> تعديل الأسعار من هاتفك في ثوانٍ</li>
+          <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-500"></i> إخفاء الأصناف المنتهية بضغطة زر</li>
+          <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-500"></i> محرك توصيل ذكي يحدد سعر الشحن</li>
+        </ul>
+      </div>
+
+      <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm hover:shadow-xl transition-all space-y-4">
+        <div class="w-12 h-12 rounded-2xl bg-amber-500/10 text-amber-600 flex items-center justify-center">
+          <i data-lucide="nfc" class="w-6 h-6"></i>
+        </div>
+        <h3 class="text-lg font-black text-navy-900">الكروت الذكية (NFC Smart Cards)</h3>
+        <p class="text-xs text-slate-600 leading-relaxed">
+          بطاقة أعمال بلاستيكية فاخرة مطبوعة بهوية مطعمك أو شركتك. بمجرد تقريبها من هاتف العميل تُحفظ بياناتك ومنيو المطعم وموقعك فوراً.
+        </p>
+        <ul class="space-y-2 text-xs font-semibold text-slate-700 pt-2 border-t border-slate-100">
+          <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-500"></i> تعمل بدون الحاجة لأي تطبيقات</li>
+          <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-500"></i> إمكانية تحديث الروابط والأرقام دائماً</li>
+          <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-500"></i> تغنيك عن طباعة آلاف الكروت الورقية</li>
+        </ul>
+      </div>
+
+      <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm hover:shadow-xl transition-all space-y-4">
+        <div class="w-12 h-12 rounded-2xl bg-navy-900/10 text-navy-900 flex items-center justify-center">
+          <i data-lucide="star" class="w-6 h-6"></i>
+        </div>
+        <h3 class="text-lg font-black text-navy-900">ستاندات الطاولات وتقييمات جوجل</h3>
+        <p class="text-xs text-slate-600 leading-relaxed">
+          ستاندات أكريليك وخشب محفورة بالليزر تحمل شعارك ورمز QR، بالإضافة لستاندات NFC لتوجيه الزبائن لتقييم مطعمك 5 نجوم على Google Maps بلمسة واحدة.
+        </p>
+        <ul class="space-y-2 text-xs font-semibold text-slate-700 pt-2 border-t border-slate-100">
+          <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-500"></i> خامات مقاومة للماء والكسر</li>
+          <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-500"></i> مضاعفة تقييماتك على خرائط جوجل</li>
+          <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-500"></i> تصميم مخصص بألوان علامتك التجارية</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4. LIVE DEMOS SECTION (DYNAMIC FROM GOOGLE SHEETS) -->
+  <section id="demos" class="py-20 px-4 bg-navy-900 text-white">
+    <div class="max-w-6xl mx-auto">
+      <div class="text-center max-w-2xl mx-auto mb-14 space-y-3">
+        <span class="text-xs font-extrabold text-emerald-400 uppercase tracking-wider">شاهد بنفسك قبل الاشتراك</span>
+        <h2 class="text-2xl md:text-4xl font-black">نماذج حية مصممة لمختلف الأنشطة</h2>
+        <p class="text-sm text-slate-400">اضغط على أي نموذج لتجربة سرعة التصفح، السلة التفاعلية، وإرسال الطلبات كأنك عميل حقيقي.</p>
+      </div>
+
+      <div id="demosGrid" class="grid md:grid-cols-3 gap-6">
+        <!-- يتم توليد النماذج تلقائياً هنا -->
+      </div>
+    </div>
+  </section>
+
+  <!-- 5. PRICING SECTION (DYNAMIC FROM GOOGLE SHEETS) -->
+  <section id="pricing" class="py-20 px-4 max-w-6xl mx-auto">
+    <div class="text-center max-w-2xl mx-auto mb-10 space-y-3">
+      <span class="text-xs font-extrabold text-amber-600 uppercase tracking-wider">استثمار ذكي بأقل من تكلفة طباعة واحدة</span>
+      <h2 class="text-2xl md:text-4xl font-black text-navy-900">باقات اشتراك مرنة تناسب حجم مشروعك</h2>
+      <p class="text-sm text-slate-500">اختر نظام الدفع المناسب لك — بدون أي عمولات على مبيعاتك أو طلباتك.</p>
+
+      <div class="inline-flex items-center bg-slate-200 p-1.5 rounded-2xl mt-4">
+        <button id="annualBtn" onclick="setBilling('annual')" class="px-5 py-2 rounded-xl text-xs font-extrabold bg-navy-900 text-white shadow transition-all">
+          اشتراك سنوي (توفير شهرين مجاناً)
+        </button>
+        <button id="monthlyBtn" onclick="setBilling('monthly')" class="px-5 py-2 rounded-xl text-xs font-extrabold text-slate-700 transition-all">
+          اشتراك شهري
+        </button>
+      </div>
+    </div>
+
+    <div id="pricingGrid" class="grid md:grid-cols-3 gap-6 items-stretch">
+      <!-- يتم توليد الباقات تلقائياً هنا -->
+    </div>
+  </section>
+
+  <!-- 6. FAQ SECTION -->
+  <section id="faq" class="py-16 px-4 bg-slate-100 border-t border-slate-200">
+    <div class="max-w-3xl mx-auto space-y-6">
+      <h2 class="text-2xl font-black text-center text-navy-900">أسئلة يتكرر طرحها من أصحاب المطاعم</h2>
+      <div class="space-y-3">
+        <details class="bg-white p-5 rounded-2xl border border-slate-200" open>
+          <summary class="font-bold text-sm text-navy-900 cursor-pointer flex justify-between items-center">
+            <span>هل يحتاج الزبون لتحميل تطبيق لفتح المنيو؟</span>
+            <i data-lucide="chevron-down" class="w-4 h-4 text-slate-400"></i>
+          </summary>
+          <p class="text-xs text-slate-600 mt-3 leading-relaxed">
+            لا إطلاقاً! بمجرد توجيه كاميرا الموبايل نحو كود الـ QR يفتح المنيو في متصفح الهاتف في أقل من ثانية واحدة وبدون أي خطوات معقدة.
+          </p>
+        </details>
+
+        <details class="bg-white p-5 rounded-2xl border border-slate-200">
+          <summary class="font-bold text-sm text-navy-900 cursor-pointer flex justify-between items-center">
+            <span>كيف أعدّل الأسعار أو أوقف صنفاً انتهى من المطبخ؟</span>
+            <i data-lucide="chevron-down" class="w-4 h-4 text-slate-400"></i>
+          </summary>
+          <p class="text-xs text-slate-600 mt-3 leading-relaxed">
+            نربط لك المنيو بلوحة تحكم سحابية بسيطة جداً عبر Google Sheets تفتحها من موبايلك، وتعدل السعر أو حالة الصنف فينعكس التحديث فوراً عند جميع الزبائن.
+          </p>
+        </details>
+
+        <details class="bg-white p-5 rounded-2xl border border-slate-200">
+          <summary class="font-bold text-sm text-navy-900 cursor-pointer flex justify-between items-center">
+            <span>هل تأخذ منظومة تك نسبة أو عمولة على الطلبات؟</span>
+            <i data-lucide="chevron-down" class="w-4 h-4 text-slate-400"></i>
+          </summary>
+          <p class="text-xs text-slate-600 mt-3 leading-relaxed">
+            نهائياً، عمولتنا 0%. الطلبات تصل مباشرة من هاتف العميل إلى رقم واتساب الكاشير الخاص بمطعمك، وأرباحك بالكامل لك.
+          </p>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <!-- 7. FOOTER -->
+  <footer class="bg-navy-950 text-slate-400 py-12 px-4 text-center border-t border-slate-800">
+    <div class="max-w-4xl mx-auto space-y-4">
+      <div class="flex items-center justify-center gap-2 text-white">
+        <span class="font-black text-xl">مَنظومة <span class="text-emerald-400">تك</span></span>
+      </div>
+      <p class="text-xs text-slate-400 max-w-md mx-auto">
+        شريكك التقني لتطوير المطاعم والكافيهات بأحدث حلول المنيو التفاعلي والكروت الذكية في مصر والوطن العربي.
+      </p>
+      <div class="pt-4 text-[11px] text-slate-600">
+        جميع الحقوق محفوظة &copy; 2026 مَنظومة تك (Manzooma Tech)
+      </div>
+    </div>
+  </footer>
+
+  <!-- CLOUD DATABASE & UI ENGINE -->
+  <script>
+    // =========================================================================
+    // 1. ضع رابط ملف GOOGLE SHEET الخاص بموقع "منظومة تك" هنا:
+    // =========================================================================
+    const GOOGLE_SHEET_URL = "https://docs.google.com/spreadsheets/d/1OP1yoaxeP6PYqdlUljXt6pAot945ysHSxfSWAr9bJ_I/edit?usp=sharing"; // مثال: "https://docs.google.com/spreadsheets/d/1ABCxyz.../edit?usp=sharing"
+
+    // =========================================================================
+    // 2. البيانات الافتراضية (تعمل فوراً إذا لم يتم وضع رابط الشيت أو انقطع الإنترنت)
+    // =========================================================================
+    let appState = {
+      whatsapp: "201000000000",
+      billing: "annual",
+      annualDiscountText: "اشتراك سنوي (توفير شهرين مجاناً)",
+      plans: [
+        {
+          id: "starter",
+          name: "باقة الانطلاق (Starter)",
+          desc: "مناسبة للكافيهات والمطاعم الناشئة",
+          annualPrice: "1,500",
+          monthlyPrice: "150",
+          features: ["منيو إلكتروني تفاعلي كامل", "استقبال الطلبات عبر واتساب", "تصميم رمز QR عالي الجودة للطباعة", "استضافة سحابية سريعة ومجانية"],
+          featured: false
+        },
+        {
+          id: "pro",
+          name: "باقة الأعمال (Pro Business)",
+          desc: "التحكم الكامل في المنيو والتوصيل والكوبونات",
+          annualPrice: "2,500",
+          monthlyPrice: "250",
+          features: ["كافة مميزات باقة الانطلاق", "لوحة تحكم سحابية لتعديل الأسعار فوراً", "محرك حساب التوصيل حسب المنطقة", "نظام كوبونات الخصم والدفع إنستاباي", "إدخال الأصناف والصور مجاناً لأول مرة"],
+          featured: true
+        },
+        {
+          id: "vip",
+          name: "الباقة المتكاملة (VIP)",
+          desc: "للمطاعم متعددة الفروع والبراندات الكبرى",
+          annualPrice: "4,200",
+          monthlyPrice: "400",
+          features: ["كافة مميزات باقة الأعمال Pro", "دومين خاص باسم مطعمك (.com)", "2 كرت ذكي NFC مطبوع بهويتك", "ستاند تقييمات Google Maps ذكي", "دعم فني وتحديثات ذات أولوية"],
+          featured: false
+        }
+      ],
+      demos: [
+        {
+          tag: "وجبات سريعة وبرجر",
+          title: "نموذج مطعم برجر",
+          subtitle: "تصميم حيوي يركز على العروض والكومبو",
+          desc: "يتميز بنافذة تخصيص الوجبات (سنجل/دبل، نوع الصوص، إضافات الجبن) مع حساب تلقائي لمناطق الدليفري.",
+          url: "#",
+          color: "amber"
+        },
+        {
+          tag: "كافيهات وحلويات",
+          title: "نموذج كافيه مختص",
+          subtitle: "تصميم أنيق وهادئ لعرض المشروبات",
+          desc: "مثالي للطلبات داخل الصالة (Dine-In) حيث يحدد العميل رقم طاولته ونوع الحليب أو السكر ويصل الطلب للكاشير فوراً.",
+          url: "#",
+          color: "emerald"
+        },
+        {
+          tag: "مشويات ومطاعم شرقية",
+          title: "نموذج مطعم مشويات",
+          subtitle: "تقسيم احترافي للأوزان والوجبات العائلية",
+          desc: "يدعم عرض الأصناف بالوزن (ربع/نصف/كيلو) مع شريط بحث سريع وأقسام متعددة تسهل التصفح.",
+          url: "#",
+          color: "rose"
+        }
+      ]
+    };
+
+    // دالة تعقيم النصوص للحماية
+    function esc(str) {
+      if (!str) return "";
+      return String(str).replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m]));
+    }
+
+    // تحليل CSV
+    function parseCSV(text) {
+      const rows = [];
+      let row = [""], inQuotes = false;
+      for (let i = 0; i < text.length; i++) {
+        const c = text[i], next = text[i + 1];
+        if (c === '"') {
+          if (inQuotes && next === '"') { row[row.length - 1] += '"'; i++; }
+          else { inQuotes = !inQuotes; }
+        } else if (c === ',' && !inQuotes) {
+          row.push("");
+        } else if ((c === '\r' || c === '\n') && !inQuotes) {
+          if (c === '\r' && next === '\n') i++;
+          if (row.some(cell => cell.trim() !== "")) rows.push(row.map(s => s.trim()));
+          row = [""];
+        } else {
+          row[row.length - 1] += c;
+        }
+      }
+      if (row.some(cell => cell.trim() !== "")) rows.push(row.map(s => s.trim()));
+      return rows;
+    }
+
+    // عرض النماذج الحية
+    function renderDemos() {
+      const grid = document.getElementById("demosGrid");
+      if (!grid) return;
+      grid.className = appState.demos.length === 4 ? "grid md:grid-cols-2 gap-6" : "grid md:grid-cols-3 gap-6";
+
+      const colorStyles = {
+        amber: { grad: "from-amber-600 to-navy-950", text: "text-amber-200", btn: "bg-amber-600 hover:bg-amber-500" },
+        emerald: { grad: "from-emerald-700 to-navy-950", text: "text-emerald-200", btn: "bg-emerald-600 hover:bg-emerald-500" },
+        rose: { grad: "from-rose-800 to-navy-950", text: "text-rose-200", btn: "bg-rose-700 hover:bg-rose-600" }
+      };
+
+      grid.innerHTML = appState.demos.map(demo => {
+        const theme = colorStyles[demo.color] || colorStyles.emerald;
+        return `
+          <div class="bg-slate-800/60 border border-slate-700 rounded-3xl overflow-hidden flex flex-col">
+            <div class="h-44 bg-gradient-to-br ${theme.grad} p-6 flex flex-col justify-between relative">
+              <span class="bg-black/40 backdrop-blur-md text-white text-[10px] font-bold px-3 py-1 rounded-full w-fit">${esc(demo.tag)}</span>
+              <div>
+                <h3 class="text-xl font-black text-white">${esc(demo.title)}</h3>
+                <p class="text-xs ${theme.text}">${esc(demo.subtitle)}</p>
+              </div>
+            </div>
+            <div class="p-6 flex-1 flex flex-col justify-between space-y-4">
+              <p class="text-xs text-slate-300 leading-relaxed">${esc(demo.desc)}</p>
+              <a href="${esc(demo.url)}" target="_blank" class="w-full ${theme.btn} text-white font-bold text-xs py-3 rounded-xl flex items-center justify-center gap-2 transition-all">
+                <i data-lucide="external-link" class="w-4 h-4"></i>
+                <span>معاينة النموذج الحي</span>
+              </a>
+            </div>
+          </div>
+        `;
+      }).join("");
+      if (window.lucide) lucide.createIcons();
+    }
+
+    // عرض الباقات والأسعار
+    function renderPricing() {
+      const grid = document.getElementById("pricingGrid");
+      if (!grid) return;
+
+      const isAnnual = appState.billing === "annual";
+      const periodLabel = isAnnual ? "ج.م / سنوياً" : "ج.م / شهرياً";
+
+      grid.innerHTML = appState.plans.map(plan => {
+        const price = isAnnual ? plan.annualPrice : plan.monthlyPrice;
+        if (plan.featured) {
+          return `
+            <div class="bg-navy-900 text-white rounded-3xl p-7 border-2 border-emerald-500 shadow-2xl relative flex flex-col justify-between transform md:-translate-y-2">
+              <span class="absolute -top-3.5 right-6 bg-emerald-500 text-slate-950 text-[11px] font-black px-3 py-1 rounded-full">الأكثر طلباً للمطاعم ⭐</span>
+              <div>
+                <h3 class="text-lg font-black text-white">${esc(plan.name)}</h3>
+                <p class="text-xs text-slate-400 mt-1">${esc(plan.desc)}</p>
+                <div class="my-6">
+                  <span class="text-4xl font-black text-emerald-400">${esc(price)}</span>
+                  <span class="text-xs font-bold text-slate-400">${periodLabel}</span>
+                </div>
+                <ul class="space-y-3 text-xs text-slate-200 font-semibold border-t border-slate-800 pt-5">
+                  ${plan.features.map(f => `<li class="flex items-center gap-2"><i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-400 shrink-0"></i><span>${esc(f)}</span></li>`).join("")}
+                </ul>
+              </div>
+              <button onclick="orderPlan('${esc(plan.name)}')" class="mt-8 w-full bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-black text-xs py-3.5 rounded-xl transition-all shadow-lg shadow-emerald-500/20">
+                ابدأ الآن مع الباقة الاحترافية
+              </button>
+            </div>
+          `;
+        } else {
+          return `
+            <div class="bg-white rounded-3xl p-7 border border-slate-200 shadow-sm flex flex-col justify-between">
+              <div>
+                <h3 class="text-lg font-black text-navy-900">${esc(plan.name)}</h3>
+                <p class="text-xs text-slate-500 mt-1">${esc(plan.desc)}</p>
+                <div class="my-6">
+                  <span class="text-4xl font-black text-navy-900">${esc(price)}</span>
+                  <span class="text-xs font-bold text-slate-500">${periodLabel}</span>
+                </div>
+                <ul class="space-y-3 text-xs text-slate-700 font-semibold border-t border-slate-100 pt-5">
+                  ${plan.features.map(f => `<li class="flex items-center gap-2"><i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-500 shrink-0"></i><span>${esc(f)}</span></li>`).join("")}
+                </ul>
+              </div>
+              <button onclick="orderPlan('${esc(plan.name)}')" class="mt-8 w-full bg-slate-100 hover:bg-slate-200 text-navy-900 font-extrabold text-xs py-3.5 rounded-xl transition-all">
+                اشترك في هذه الباقة
+              </button>
+            </div>
+          `;
+        }
+      }).join("");
+      if (window.lucide) lucide.createIcons();
+    }
+
+    function setBilling(type) {
+      appState.billing = type;
+      const annualBtn = document.getElementById("annualBtn");
+      const monthlyBtn = document.getElementById("monthlyBtn");
+      if (type === "annual") {
+        annualBtn.className = "px-5 py-2 rounded-xl text-xs font-extrabold bg-navy-900 text-white shadow transition-all";
+        monthlyBtn.className = "px-5 py-2 rounded-xl text-xs font-extrabold text-slate-700 transition-all";
+      } else {
+        monthlyBtn.className = "px-5 py-2 rounded-xl text-xs font-extrabold bg-navy-900 text-white shadow transition-all";
+        annualBtn.className = "px-5 py-2 rounded-xl text-xs font-extrabold text-slate-700 transition-all";
+      }
+      renderPricing();
+    }
+
+    function orderPlan(planName) {
+      const billingText = appState.billing === "annual" ? "الاشتراك السنوي" : "الاشتراك الشهري";
+      const message = `مرحباً مَنظومة تك 👋\nأرغب في الاشتراك في: *${planName}*\nنظام الدفع: *${billingText}*\nيرجى تزويدي بخطوات البدء.`;
+      window.open(`https://wa.me/${appState.whatsapp}?text=${encodeURIComponent(message)}`, "_blank");
+    }
+
+    function updateWhatsappLinks() {
+      const navBtn = document.getElementById("navWhatsappBtn");
+      if (navBtn) {
+        navBtn.href = `https://wa.me/${appState.whatsapp}?text=${encodeURIComponent("مرحباً منظومة تك، أرغب في الاستفسار عن الخدمات")}`;
+      }
+    }
+
+    // جلب البيانات من Google Sheets (Multi-Tab GViz API)
+    async function syncFromGoogleSheets() {
+      if (!GOOGLE_SHEET_URL) return;
+      const match = GOOGLE_SHEET_URL.match(/\/d\/([a-zA-Z0-9-_]+)/);
+      if (!match) return;
+      const sheetId = match[1];
+
+      try {
+        const [plansRes, demosRes, settingsRes] = await Promise.all([
+          fetch(`https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent('الباقات')}`).then(r => r.ok ? r.text() : ""),
+          fetch(`https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent('النماذج')}`).then(r => r.ok ? r.text() : ""),
+          fetch(`https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent('الإعدادات')}`).then(r => r.ok ? r.text() : "")
+        ]);
+
+        // 1. معالجة الباقات
+        if (plansRes && !plansRes.includes("<!DOCTYPE html>")) {
+          const rows = parseCSV(plansRes);
+          if (rows.length > 1) {
+            appState.plans = rows.slice(1).filter(r => r[1]).map((r, idx) => ({
+              id: r[0] || `plan-${idx}`,
+              name: r[1],
+              desc: r[2] || "",
+              annualPrice: r[3] || "0",
+              monthlyPrice: r[4] || "0",
+              features: r[5] ? r[5].split("|").map(f => f.trim()).filter(Boolean) : [],
+              featured: (r[6] || "").includes("نعم")
+            }));
+          }
+        }
+
+        // 2. معالجة النماذج
+        if (demosRes && !demosRes.includes("<!DOCTYPE html>")) {
+          const rows = parseCSV(demosRes);
+          if (rows.length > 1) {
+            appState.demos = rows.slice(1).filter(r => r[1]).map(r => ({
+              tag: r[0] || "نموذج مطعم",
+              title: r[1],
+              subtitle: r[2] || "",
+              desc: r[3] || "",
+              url: r[4] || "#",
+              color: (r[5] || "emerald").toLowerCase().trim()
+            }));
+          }
+        }
+
+        // 3. معالجة الإعدادات
+        if (settingsRes && !settingsRes.includes("<!DOCTYPE html>")) {
+          const rows = parseCSV(settingsRes);
+          rows.slice(1).forEach(r => {
+            const key = (r[0] || "").trim().toLowerCase();
+            const val = (r[1] || "").trim();
+            if (key === "whatsapp_number" && val) appState.whatsapp = val;
+            if (key === "annual_discount_text" && val) {
+              document.getElementById("annualBtn").textContent = val;
+            }
+          });
+        }
+
+        updateWhatsappLinks();
+        renderDemos();
+        renderPricing();
+      } catch (err) {
+        console.warn("تم الاعتماد على البيانات الافتراضية:", err);
+      }
+    }
+
+    // التشغيل عند فتح الصفحة
+    document.addEventListener("DOMContentLoaded", () => {
+      updateWhatsappLinks();
+      renderDemos();
+      renderPricing();
+      syncFromGoogleSheets();
+    });
+  </script>
+</body>
+</html>
