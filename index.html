@@ -26,18 +26,37 @@
     }
   </script>
   <script src="https://unpkg.com/lucide@latest"></script>
+  <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
 
   <style>
     body { font-family: 'Cairo', sans-serif; }
-    .glass-nav { background: rgba(15, 23, 42, 0.92); backdrop-filter: blur(12px); }
+    .hidden { display: none !important; }
+    .glass-nav { background: rgba(15, 23, 42, 0.94); backdrop-filter: blur(12px); }
     .hero-pattern {
       background-color: #0F172A;
       background-image: radial-gradient(#1E293B 1px, transparent 1px);
       background-size: 24px 24px;
     }
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(2, 6, 23, 0.78);
+      backdrop-filter: blur(6px);
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+    }
   </style>
 </head>
 <body class="bg-slate-50 text-slate-800 antialiased">
+
+  <!-- TOAST NOTIFICATION -->
+  <div id="toastBox" class="fixed bottom-5 left-5 z-[120] hidden max-w-sm bg-navy-900 text-white px-4 py-3 rounded-2xl shadow-2xl border border-slate-700 text-xs font-bold flex items-center gap-2.5 transition-all">
+    <span id="toastIcon">✅</span>
+    <span id="toastMsg">تم الحفظ بنجاح</span>
+  </div>
 
   <!-- 1. NAVBAR -->
   <nav class="fixed top-0 w-full z-50 glass-nav border-b border-slate-800 text-white">
@@ -55,17 +74,23 @@
         </div>
       </a>
 
-      <div class="hidden md:flex items-center gap-7 text-sm font-bold text-slate-300">
+      <div class="hidden md:flex items-center gap-6 text-sm font-bold text-slate-300">
         <a href="#services" class="hover:text-emerald-400 transition-colors">الخدمات</a>
-        <a href="#demos" class="hover:text-emerald-400 transition-colors">نماذج حية</a>
-        <a href="#pricing" class="hover:text-emerald-400 transition-colors">الأسعار والباقات</a>
+        <a href="#demos" class="hover:text-emerald-400 transition-colors">نماذج المنيو</a>
+        <a href="#pricing" class="hover:text-emerald-400 transition-colors">باقات الاشتراك</a>
+        <a href="#products" class="hover:text-emerald-400 transition-colors">الكروت والستاندات</a>
         <a href="#faq" class="hover:text-emerald-400 transition-colors">الأسئلة الشائعة</a>
       </div>
 
-      <a id="navWhatsappBtn" href="https://wa.me/201000000000" target="_blank" class="bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-extrabold text-xs md:text-sm px-4 py-2.5 rounded-xl transition-all flex items-center gap-1.5 shadow-lg shadow-emerald-500/20">
-        <i data-lucide="message-circle" class="w-4 h-4"></i>
-        <span>اطلب استشارتك</span>
-      </a>
+      <div class="flex items-center gap-2">
+        <a id="navWhatsappBtn" href="https://wa.me/201000000000" target="_blank" class="bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-extrabold text-xs md:text-sm px-4 py-2.5 rounded-xl transition-all flex items-center gap-1.5 shadow-lg shadow-emerald-500/20">
+          <i data-lucide="message-circle" class="w-4 h-4"></i>
+          <span>اطلب استشارتك</span>
+        </a>
+        <button onclick="openAdminModal()" title="لوحة تحكم المالك" class="bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-emerald-400 p-2.5 rounded-xl border border-slate-700 transition-all">
+          <i data-lucide="shield-check" class="w-4 h-4"></i>
+        </button>
+      </div>
     </div>
   </nav>
 
@@ -74,7 +99,7 @@
     <div class="max-w-6xl mx-auto grid md:grid-cols-2 gap-12 items-center">
       <div class="space-y-6 text-center md:text-right">
         <div class="inline-flex items-center gap-2 bg-slate-800/80 border border-slate-700 px-3.5 py-1.5 rounded-full text-xs font-bold text-emerald-400">
-          <span id="syncDot" class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
           <span>نظام التشغيل الذكي للمطاعم والكافيهات</span>
         </div>
         
@@ -83,7 +108,7 @@
         </h1>
         
         <p class="text-slate-300 text-sm md:text-base leading-relaxed max-w-xl mx-auto md:mx-0">
-          منيو إلكتروني تفاعلي يعمل عبر QR، يستقبل طلبات الصالة والتوصيل مباشرة على واتساب الكاشير، مع لوحة تحكم سحابية لتعديل الأسعار في ثانية واحدة.
+          منيو إلكتروني تفاعلي يعمل عبر QR، كروت ذكية NFC، وستاندات طاولات عصرية تستقبل الطلبات والتقييمات بلمسة واحدة.
         </p>
 
         <div class="flex flex-col sm:flex-row gap-3 justify-center md:justify-start pt-2">
@@ -91,8 +116,9 @@
             <i data-lucide="smartphone" class="w-5 h-5"></i>
             <span>جرّب النماذج الحية الآن</span>
           </a>
-          <a href="#pricing" class="bg-slate-800 hover:bg-slate-700 border border-slate-700 text-white font-bold px-6 py-3.5 rounded-xl transition-all flex items-center justify-center gap-2">
-            <span>استعرض الباقات والأسعار</span>
+          <a href="#products" class="bg-slate-800 hover:bg-slate-700 border border-slate-700 text-white font-bold px-6 py-3.5 rounded-xl transition-all flex items-center justify-center gap-2">
+            <i data-lucide="nfc" class="w-4 h-4 text-emerald-400"></i>
+            <span>تصفح الكروت والستاندات</span>
           </a>
         </div>
 
@@ -134,7 +160,7 @@
                 <h4 class="text-xs font-bold text-white mt-1">دبل سماش برجر بالجبن</h4>
                 <p class="text-xs font-black text-emerald-400 mt-1">165 ج.م</p>
               </div>
-              <button class="bg-emerald-500 text-slate-950 font-black text-xs px-3 py-1.5 rounded-lg">+ إضافة</button>
+              <span class="bg-emerald-500 text-slate-950 font-black text-xs px-3 py-1.5 rounded-lg">+ إضافة</span>
             </div>
 
             <div class="bg-emerald-600 text-white p-3 rounded-xl flex justify-between items-center text-xs font-bold shadow-lg">
@@ -203,7 +229,7 @@
     </div>
   </section>
 
-  <!-- 4. LIVE DEMOS SECTION (DYNAMIC FROM GOOGLE SHEETS) -->
+  <!-- 4. LIVE DEMOS SECTION -->
   <section id="demos" class="py-20 px-4 bg-navy-900 text-white">
     <div class="max-w-6xl mx-auto">
       <div class="text-center max-w-2xl mx-auto mb-14 space-y-3">
@@ -213,16 +239,16 @@
       </div>
 
       <div id="demosGrid" class="grid md:grid-cols-3 gap-6">
-        <!-- يتم توليد النماذج تلقائياً هنا -->
+        <!-- Injected dynamically -->
       </div>
     </div>
   </section>
 
-  <!-- 5. PRICING SECTION (DYNAMIC FROM GOOGLE SHEETS) -->
+  <!-- 5. PRICING SECTION (SUBSCRIPTIONS) -->
   <section id="pricing" class="py-20 px-4 max-w-6xl mx-auto">
     <div class="text-center max-w-2xl mx-auto mb-10 space-y-3">
-      <span class="text-xs font-extrabold text-amber-600 uppercase tracking-wider">استثمار ذكي بأقل من تكلفة طباعة واحدة</span>
-      <h2 class="text-2xl md:text-4xl font-black text-navy-900">باقات اشتراك مرنة تناسب حجم مشروعك</h2>
+      <span class="text-xs font-extrabold text-amber-600 uppercase tracking-wider">عروض حصرية لفترة محدودة 🔥</span>
+      <h2 class="text-2xl md:text-4xl font-black text-navy-900">باقات اشتراك المنيو الإلكتروني</h2>
       <p class="text-sm text-slate-500">اختر نظام الدفع المناسب لك — بدون أي عمولات على مبيعاتك أو طلباتك.</p>
 
       <div class="inline-flex items-center bg-slate-200 p-1.5 rounded-2xl mt-4">
@@ -236,32 +262,47 @@
     </div>
 
     <div id="pricingGrid" class="grid md:grid-cols-3 gap-6 items-stretch">
-      <!-- يتم توليد الباقات تلقائياً هنا -->
+      <!-- Injected dynamically -->
     </div>
   </section>
 
-  <!-- 6. FAQ SECTION -->
+  <!-- 6. SMART HARDWARE PRODUCTS SECTION (NFC CARDS & QR STANDS) -->
+  <section id="products" class="py-20 px-4 bg-slate-900 text-white border-t border-slate-800">
+    <div class="max-w-6xl mx-auto">
+      <div class="text-center max-w-2xl mx-auto mb-14 space-y-3">
+        <span class="text-xs font-extrabold text-amber-400 uppercase tracking-wider">منتجات ذكية تُطبع بهوية علامتك التجارية</span>
+        <h2 class="text-2xl md:text-4xl font-black">الكروت الذكية NFC وستاندات QR</h2>
+        <p class="text-sm text-slate-400">تُشترى لمرة واحدة وتعمل مدى الحياة بدون اشتراكات شهرية — اطلبها منفردة أو أضفها لباقتك مع خصم الكميات.</p>
+      </div>
+
+      <div id="productsGrid" class="grid md:grid-cols-3 gap-6 items-stretch">
+        <!-- Injected dynamically -->
+      </div>
+    </div>
+  </section>
+
+  <!-- 7. FAQ SECTION -->
   <section id="faq" class="py-16 px-4 bg-slate-100 border-t border-slate-200">
     <div class="max-w-3xl mx-auto space-y-6">
       <h2 class="text-2xl font-black text-center text-navy-900">أسئلة يتكرر طرحها من أصحاب المطاعم</h2>
       <div class="space-y-3">
         <details class="bg-white p-5 rounded-2xl border border-slate-200" open>
           <summary class="font-bold text-sm text-navy-900 cursor-pointer flex justify-between items-center">
-            <span>هل يحتاج الزبون لتحميل تطبيق لفتح المنيو؟</span>
+            <span>هل يحتاج الزبون لتحميل تطبيق لفتح المنيو أو قراءة الكرت الذكي؟</span>
             <i data-lucide="chevron-down" class="w-4 h-4 text-slate-400"></i>
           </summary>
           <p class="text-xs text-slate-600 mt-3 leading-relaxed">
-            لا إطلاقاً! بمجرد توجيه كاميرا الموبايل نحو كود الـ QR يفتح المنيو في متصفح الهاتف في أقل من ثانية واحدة وبدون أي خطوات معقدة.
+            لا إطلاقاً! بمجرد توجيه كاميرا الموبايل نحو كود الـ QR أو تقريب الهاتف من كرت أو ستاند NFC يفتح الرابط فوراً في متصفح الهاتف في أقل من ثانية واحدة.
           </p>
         </details>
 
         <details class="bg-white p-5 rounded-2xl border border-slate-200">
           <summary class="font-bold text-sm text-navy-900 cursor-pointer flex justify-between items-center">
-            <span>كيف أعدّل الأسعار أو أوقف صنفاً انتهى من المطبخ؟</span>
+            <span>هل يمكن تغيير الرابط المبرمج على كروت NFC أو ستاندات QR مستقبلاً؟</span>
             <i data-lucide="chevron-down" class="w-4 h-4 text-slate-400"></i>
           </summary>
           <p class="text-xs text-slate-600 mt-3 leading-relaxed">
-            نربط لك المنيو بلوحة تحكم سحابية بسيطة جداً عبر Google Sheets تفتحها من موبايلك، وتعدل السعر أو حالة الصنف فينعكس التحديث فوراً عند جميع الزبائن.
+            نعم، الكروت والستاندات قابلة لإعادة البرمجة وتحديث الروابط أو أرقام الهواتف في أي وقت دون الحاجة لإعادة طباعتها.
           </p>
         </details>
 
@@ -278,7 +319,7 @@
     </div>
   </section>
 
-  <!-- 7. FOOTER -->
+  <!-- 8. FOOTER -->
   <footer class="bg-navy-950 text-slate-400 py-12 px-4 text-center border-t border-slate-800">
     <div class="max-w-4xl mx-auto space-y-4">
       <div class="flex items-center justify-center gap-2 text-white">
@@ -293,46 +334,276 @@
     </div>
   </footer>
 
-  <!-- CLOUD DATABASE & UI ENGINE -->
-  <script>
-    // =========================================================================
-    // 1. ضع رابط ملف GOOGLE SHEET الخاص بموقع "منظومة تك" هنا:
-    // =========================================================================
-    const GOOGLE_SHEET_URL = "https://docs.google.com/spreadsheets/d/1OP1yoaxeP6PYqdlUljXt6pAot945ysHSxfSWAr9bJ_I/edit?usp=sharing"; // مثال: "https://docs.google.com/spreadsheets/d/1ABCxyz.../edit?usp=sharing"
+  <!-- =========================================================================
+       ADMIN DASHBOARD MODAL (لوحة تحكم المالك الكاملة)
+       ========================================================================= -->
+  <div id="adminModal" class="modal-backdrop hidden">
+    <div class="bg-white w-full max-w-4xl max-h-[92vh] rounded-3xl shadow-2xl border border-slate-200 flex flex-col overflow-hidden">
+      <!-- Header -->
+      <div class="bg-navy-900 text-white px-6 py-4 flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <i data-lucide="shield-check" class="w-5 h-5 text-emerald-400"></i>
+          <h3 class="font-black text-base">لوحة تحكم مَنظومة تك</h3>
+        </div>
+        <button onclick="closeAdminModal()" class="text-slate-400 hover:text-white p-1">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
 
-    // =========================================================================
-    // 2. البيانات الافتراضية (تعمل فوراً إذا لم يتم وضع رابط الشيت أو انقطع الإنترنت)
-    // =========================================================================
-    let appState = {
+      <!-- Login View -->
+      <div id="adminLoginView" class="p-8 space-y-4 text-center max-w-sm mx-auto my-auto">
+        <div class="w-14 h-14 rounded-2xl bg-emerald-500/10 text-emerald-600 flex items-center justify-center mx-auto">
+          <i data-lucide="lock" class="w-7 h-7"></i>
+        </div>
+        <h4 class="font-black text-lg text-navy-900">تسجيل دخول الإدارة</h4>
+        <p class="text-xs text-slate-500">أدخل كلمة المرور للتحكم في الباقات، منتجات NFC وستاندات QR، والنماذج الحية (الافتراضية: admin123)</p>
+        <input type="password" id="adminPwdInput" placeholder="كلمة المرور..." class="w-full px-4 py-3 rounded-xl border border-slate-300 text-sm text-center focus:outline-none focus:border-emerald-500" onkeydown="if(event.key==='Enter') verifyAdminLogin()">
+        <button onclick="verifyAdminLogin()" class="w-full bg-navy-900 hover:bg-slate-800 text-white font-extrabold text-sm py-3 rounded-xl transition-all">
+          دخول للوحة التحكم
+        </button>
+      </div>
+
+      <!-- Dashboard Content View -->
+      <div id="adminDashboardView" class="hidden flex-1 overflow-y-auto p-6 space-y-6">
+        
+        <!-- Quick Export / Publish Bar -->
+        <div class="bg-emerald-50 border border-emerald-200 p-4 rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-3">
+          <div>
+            <h4 class="font-black text-xs text-emerald-950">تثبيت التعديلات ونشرها للجميع 🌍</h4>
+            <p class="text-[11px] text-emerald-800 mt-0.5">بعد تعديل الأسعار أو المنتجات أو الروابط، اضغط هنا لتحميل ملف index.html محدّث وجاهز للرفع على استضافتك.</p>
+          </div>
+          <button onclick="exportUpdatedHTML()" class="shrink-0 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs px-4 py-2.5 rounded-xl flex items-center gap-1.5 shadow">
+            <i data-lucide="download" class="w-4 h-4"></i>
+            <span>تحميل نسخة الموقع المحدّثة</span>
+          </button>
+        </div>
+
+        <!-- Tabs -->
+        <div class="flex gap-2 border-b border-slate-200 pb-2 overflow-x-auto">
+          <button onclick="switchAdminTab('products')" id="tabBtnProducts" class="px-4 py-2 rounded-xl text-xs font-extrabold bg-navy-900 text-white shrink-0">1. الكروت والستاندات (NFC/QR)</button>
+          <button onclick="switchAdminTab('pricing')" id="tabBtnPricing" class="px-4 py-2 rounded-xl text-xs font-extrabold bg-slate-100 text-slate-700 shrink-0">2. باقات الاشتراك</button>
+          <button onclick="switchAdminTab('demos')" id="tabBtnDemos" class="px-4 py-2 rounded-xl text-xs font-extrabold bg-slate-100 text-slate-700 shrink-0">3. النماذج الحية (Demos)</button>
+          <button onclick="switchAdminTab('cloud')" id="tabBtnCloud" class="px-4 py-2 rounded-xl text-xs font-extrabold bg-slate-100 text-slate-700 shrink-0">4. Excel والسحابة والواتساب</button>
+        </div>
+
+        <!-- TAB 1: SMART PRODUCTS MANAGER (NFC & QR) -->
+        <div id="adminTabProducts" class="space-y-4">
+          <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200 space-y-3">
+            <h5 class="font-black text-xs text-navy-900">➕ إضافة منتج ذكي جديد (كرت NFC / ستاند QR)</h5>
+            <div class="grid sm:grid-cols-3 gap-2.5">
+              <input id="newProdTag" type="text" placeholder="التصنيف (مثال: كروت ذكية)" class="px-3 py-2 rounded-xl border border-slate-300 text-xs">
+              <input id="newProdName" type="text" placeholder="اسم المنتج *" class="px-3 py-2 rounded-xl border border-slate-300 text-xs">
+              <input id="newProdBadge" type="text" placeholder="شارة تمييز (مثال: الأكثر مبيعاً)" class="px-3 py-2 rounded-xl border border-slate-300 text-xs">
+              <input id="newProdOrigPrice" type="text" placeholder="السعر قبل الخصم (مثال: 450)" class="px-3 py-2 rounded-xl border border-slate-300 text-xs">
+              <input id="newProdPrice" type="text" placeholder="السعر بعد الخصم * (مثال: 300)" class="px-3 py-2 rounded-xl border border-emerald-400 text-xs font-bold">
+              <select id="newProdIcon" class="px-3 py-2 rounded-xl border border-slate-300 text-xs bg-white">
+                <option value="nfc">أيقونة كرت NFC</option>
+                <option value="qr-code">أيقونة ستاند QR</option>
+                <option value="star">أيقونة تقييمات جوجل ⭐</option>
+                <option value="layers">أيقونة باقة متكاملة</option>
+              </select>
+            </div>
+            <input id="newProdImage" type="url" dir="ltr" placeholder="رابط صورة المنتج (اختياري - https://...)" class="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs">
+            <textarea id="newProdFeatures" rows="2" placeholder="المميزات (كل ميزة في سطر مستقل)..." class="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs"></textarea>
+            <button onclick="addNewProduct()" class="bg-navy-900 hover:bg-slate-800 text-white font-bold text-xs px-4 py-2.5 rounded-xl">إضافة المنتج للقائمة</button>
+          </div>
+
+          <div id="adminProductsList" class="space-y-3">
+            <!-- Existing smart products injected here -->
+          </div>
+        </div>
+
+        <!-- TAB 2: PRICING & DISCOUNTS MANAGER -->
+        <div id="adminTabPricing" class="hidden space-y-4">
+          <div id="adminPricingList" class="space-y-4">
+            <!-- Existing plans injected here -->
+          </div>
+        </div>
+
+        <!-- TAB 3: DEMOS MANAGER -->
+        <div id="adminTabDemos" class="hidden space-y-4">
+          <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200 space-y-3">
+            <h5 class="font-black text-xs text-navy-900">➕ إضافة نموذج منيو تجريبي جديد</h5>
+            <div class="grid sm:grid-cols-2 gap-2.5">
+              <input id="newDemoTag" type="text" placeholder="التصنيف (مثال: كافيهات وحلويات)" class="px-3 py-2 rounded-xl border border-slate-300 text-xs">
+              <input id="newDemoTitle" type="text" placeholder="اسم النموذج (مثال: منيو كافيه مودرن)" class="px-3 py-2 rounded-xl border border-slate-300 text-xs">
+              <input id="newDemoSubtitle" type="text" placeholder="عنوان فرعي قصير" class="px-3 py-2 rounded-xl border border-slate-300 text-xs">
+              <select id="newDemoColor" class="px-3 py-2 rounded-xl border border-slate-300 text-xs bg-white">
+                <option value="emerald">لون زمردي (Emerald)</option>
+                <option value="amber">لون برتقالي (Amber)</option>
+                <option value="rose">لون عنابي/أحمر (Rose)</option>
+              </select>
+            </div>
+            <input id="newDemoUrl" type="url" dir="ltr" placeholder="رابط المنيو التجريبي (https://...)" class="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs">
+            <textarea id="newDemoDesc" rows="2" placeholder="وصف مختصر لمميزات هذا النموذج..." class="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs"></textarea>
+            <button onclick="addNewDemo()" class="bg-navy-900 hover:bg-slate-800 text-white font-bold text-xs px-4 py-2.5 rounded-xl">إضافة النموذج للقائمة</button>
+          </div>
+
+          <div id="adminDemosList" class="space-y-3">
+            <!-- Existing demos injected here -->
+          </div>
+        </div>
+
+        <!-- TAB 4: EXCEL, GOOGLE SHEETS & SETTINGS -->
+        <div id="adminTabCloud" class="hidden space-y-5">
+          <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200 space-y-3">
+            <h5 class="font-black text-xs text-navy-900">📱 إعدادات التواصل والخصم</h5>
+            <div class="grid sm:grid-cols-2 gap-3">
+              <div>
+                <label class="text-[11px] font-bold text-slate-600 block mb-1">رقم الواتساب (بالصيغة الدولية بدون +)</label>
+                <input id="adminWhatsappInput" type="text" dir="ltr" class="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs">
+              </div>
+              <div>
+                <label class="text-[11px] font-bold text-slate-600 block mb-1">نص زر الاشتراك السنوي</label>
+                <input id="adminDiscountInput" type="text" class="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs">
+              </div>
+            </div>
+            <button onclick="saveGeneralSettings()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs px-4 py-2 rounded-xl">حفظ الإعدادات</button>
+          </div>
+
+          <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200 space-y-3">
+            <h5 class="font-black text-xs text-navy-900">📊 الإدارة الشاملة عبر ملف Excel (.xlsx / .csv)</h5>
+            <p class="text-[11px] text-slate-500">يشمل الملف 4 صفحات: (المنتجات، الباقات، النماذج، الإعدادات) بالأسعار قبل وبعد الخصم.</p>
+            <div class="flex flex-wrap gap-2">
+              <button onclick="downloadExcelTemplate()" class="bg-navy-900 hover:bg-slate-800 text-white font-bold text-xs px-4 py-2.5 rounded-xl flex items-center gap-1.5">
+                <i data-lucide="file-spreadsheet" class="w-4 h-4 text-emerald-400"></i>
+                <span>تحميل نموذج Excel جاهز</span>
+              </button>
+              <label class="bg-amber-600 hover:bg-amber-500 text-white font-bold text-xs px-4 py-2.5 rounded-xl flex items-center gap-1.5 cursor-pointer">
+                <i data-lucide="upload" class="w-4 h-4"></i>
+                <span>رفع ملف Excel للتحديث الفوري</span>
+                <input type="file" accept=".xlsx,.xls,.csv" onchange="handleExcelUpload(event)" class="hidden">
+              </label>
+            </div>
+          </div>
+
+          <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200 space-y-3">
+            <h5 class="font-black text-xs text-navy-900">☁️ الربط السحابي مع Google Sheets</h5>
+            <p class="text-[11px] text-slate-500">تأكد أن الشيت مضبوط على: مشاركة > أي شخص لديه الرابط (مشاهد).</p>
+            <div class="flex gap-2">
+              <input id="adminSheetUrlInput" type="url" dir="ltr" placeholder="https://docs.google.com/spreadsheets/d/..." class="flex-1 px-3 py-2 rounded-xl border border-slate-300 text-xs">
+              <button onclick="saveAndSyncSheet()" id="syncSheetBtn" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs px-4 py-2 rounded-xl shrink-0">مزامنة الآن</button>
+            </div>
+          </div>
+
+          <div class="pt-2 flex justify-between items-center border-t border-slate-200">
+            <button onclick="resetAllDefaults()" class="text-xs font-bold text-rose-600 hover:underline">استعادة البيانات الافتراضية للموقع</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       APPLICATION CORE SCRIPT
+       ========================================================================= -->
+  <script id="appCoreScript">
+    /* === DEFAULT_CONFIG_START === */
+    const DEFAULT_STATE = {
+      sheetUrl: "",
       whatsapp: "201000000000",
       billing: "annual",
       annualDiscountText: "اشتراك سنوي (توفير شهرين مجاناً)",
+      products: [
+        {
+          id: "nfc-card-pro",
+          tag: "كروت ذكية NFC",
+          name: "كرت الأعمال الذكي (NFC + QR)",
+          badge: "الأكثر مبيعاً 🔥",
+          originalPrice: "450",
+          price: "300",
+          icon: "nfc",
+          imageUrl: "",
+          features: [
+            "طباعة فاخرة مقاومة للماء والخدش بشعارك",
+            "يعمل بلمسة واحدة على هواتف أندرويد وآيفون",
+            "مزود برمز QR مطبوع في الخلف كخيار إضافي",
+            "إمكانية تحديث الروابط والأرقام في أي وقت"
+          ]
+        },
+        {
+          id: "qr-acrylic-stand",
+          tag: "ستاندات الطاولات",
+          name: "ستاند طاولة أكريليك فاخر (QR + NFC)",
+          badge: "خصم الكميات",
+          originalPrice: "280",
+          price: "190",
+          icon: "qr-code",
+          imageUrl: "",
+          features: [
+            "أكريليك أسود/شفاف محفور بالليزر عالي الدقة",
+            "مدمج بداخله شريحة NFC + كود QR للمنيو",
+            "مقاوم للسوائل والمنظفات وسهل التنظيف",
+            "خصم خاص عند طلب 10 ستاندات أو أكثر"
+          ]
+        },
+        {
+          id: "google-review-stand",
+          tag: "زيادة التقييمات",
+          name: "ستاند تقييمات Google Maps الذكي",
+          badge: "ارفع تقييمك ⭐",
+          originalPrice: "350",
+          price: "240",
+          icon: "star",
+          imageUrl: "",
+          features: [
+            "يفتح صفحة تقييم مطعمك 5 نجوم بلمسة هاتف",
+            "مثالي للوضع بجانب الكاشير أو عند باب الخروج",
+            "يضاعف تقييماتك الإيجابية وظهورك على الخريطة",
+            "تصميم مخصص بألوان وشعار مطعمك"
+          ]
+        }
+      ],
       plans: [
         {
           id: "starter",
           name: "باقة الانطلاق (Starter)",
           desc: "مناسبة للكافيهات والمطاعم الناشئة",
+          annualOriginalPrice: "2,200",
           annualPrice: "1,500",
+          monthlyOriginalPrice: "220",
           monthlyPrice: "150",
-          features: ["منيو إلكتروني تفاعلي كامل", "استقبال الطلبات عبر واتساب", "تصميم رمز QR عالي الجودة للطباعة", "استضافة سحابية سريعة ومجانية"],
+          features: [
+            "منيو إلكتروني تفاعلي كامل",
+            "استقبال الطلبات عبر واتساب",
+            "تصميم رمز QR عالي الجودة للطباعة",
+            "استضافة سحابية سريعة ومجانية"
+          ],
           featured: false
         },
         {
           id: "pro",
           name: "باقة الأعمال (Pro Business)",
           desc: "التحكم الكامل في المنيو والتوصيل والكوبونات",
+          annualOriginalPrice: "3,500",
           annualPrice: "2,500",
+          monthlyOriginalPrice: "350",
           monthlyPrice: "250",
-          features: ["كافة مميزات باقة الانطلاق", "لوحة تحكم سحابية لتعديل الأسعار فوراً", "محرك حساب التوصيل حسب المنطقة", "نظام كوبونات الخصم والدفع إنستاباي", "إدخال الأصناف والصور مجاناً لأول مرة"],
+          features: [
+            "كافة مميزات باقة الانطلاق",
+            "لوحة تحكم سحابية لتعديل الأسعار فوراً",
+            "محرك حساب التوصيل حسب المنطقة",
+            "نظام كوبونات الخصم والدفع إنستاباي",
+            "إدخال الأصناف والصور مجاناً لأول مرة"
+          ],
           featured: true
         },
         {
           id: "vip",
           name: "الباقة المتكاملة (VIP)",
           desc: "للمطاعم متعددة الفروع والبراندات الكبرى",
+          annualOriginalPrice: "5,500",
           annualPrice: "4,200",
+          monthlyOriginalPrice: "550",
           monthlyPrice: "400",
-          features: ["كافة مميزات باقة الأعمال Pro", "دومين خاص باسم مطعمك (.com)", "2 كرت ذكي NFC مطبوع بهويتك", "ستاند تقييمات Google Maps ذكي", "دعم فني وتحديثات ذات أولوية"],
+          features: [
+            "كافة مميزات باقة الأعمال Pro",
+            "دومين خاص باسم مطعمك (.com)",
+            "2 كرت ذكي NFC مطبوع بهويتك",
+            "ستاند تقييمات Google Maps ذكي",
+            "دعم فني وتحديثات ذات أولوية"
+          ],
           featured: false
         }
       ],
@@ -342,7 +613,7 @@
           title: "نموذج مطعم برجر",
           subtitle: "تصميم حيوي يركز على العروض والكومبو",
           desc: "يتميز بنافذة تخصيص الوجبات (سنجل/دبل، نوع الصوص، إضافات الجبن) مع حساب تلقائي لمناطق الدليفري.",
-          url: "#",
+          url: "#demos",
           color: "amber"
         },
         {
@@ -350,7 +621,7 @@
           title: "نموذج كافيه مختص",
           subtitle: "تصميم أنيق وهادئ لعرض المشروبات",
           desc: "مثالي للطلبات داخل الصالة (Dine-In) حيث يحدد العميل رقم طاولته ونوع الحليب أو السكر ويصل الطلب للكاشير فوراً.",
-          url: "#",
+          url: "#demos",
           color: "emerald"
         },
         {
@@ -358,19 +629,714 @@
           title: "نموذج مطعم مشويات",
           subtitle: "تقسيم احترافي للأوزان والوجبات العائلية",
           desc: "يدعم عرض الأصناف بالوزن (ربع/نصف/كيلو) مع شريط بحث سريع وأقسام متعددة تسهل التصفح.",
-          url: "#",
+          url: "#demos",
           color: "rose"
         }
       ]
     };
+    /* === DEFAULT_CONFIG_END === */
 
-    // دالة تعقيم النصوص للحماية
+    const STORAGE_KEY = "manzooma_site_state_v4";
+    const ADMIN_HASH = "240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9"; // admin123
+
+    let appState = loadInitialState();
+
+    function loadInitialState() {
+      try {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          return { ...DEFAULT_STATE, ...parsed };
+        }
+      } catch (e) {}
+      return JSON.parse(JSON.stringify(DEFAULT_STATE));
+    }
+
+    function persistState() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(appState));
+      } catch (e) {}
+    }
+
     function esc(str) {
-      if (!str) return "";
+      if (str === null || str === undefined) return "";
       return String(str).replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m]));
     }
 
-    // تحليل CSV
+    function parseNumericPrice(val) {
+      if (!val) return 0;
+      const num = parseFloat(String(val).replace(/[^\d.]/g, ""));
+      return isNaN(num) ? 0 : num;
+    }
+
+    function normalizeUrl(url) {
+      const clean = (url || "").trim();
+      if (!clean || clean === "#" || clean === "#demos") return "#demos";
+      if (!/^https?:\/\//i.test(clean)) return "https://" + clean;
+      return clean;
+    }
+
+    function showToast(msg, icon = "✅") {
+      const box = document.getElementById("toastBox");
+      document.getElementById("toastMsg").textContent = msg;
+      document.getElementById("toastIcon").textContent = icon;
+      box.classList.remove("hidden");
+      clearTimeout(window._toastTimer);
+      window._toastTimer = setTimeout(() => box.classList.add("hidden"), 3500);
+    }
+
+    // =========================================================================
+    // RENDER PUBLIC UI (DEMOS, PRICING, SMART PRODUCTS)
+    // =========================================================================
+    function renderDemos() {
+      const grid = document.getElementById("demosGrid");
+      if (!grid) return;
+      grid.className = appState.demos.length === 4 ? "grid md:grid-cols-2 gap-6" : "grid md:grid-cols-3 gap-6";
+
+      const colorStyles = {
+        amber: { grad: "from-amber-600 to-navy-950", text: "text-amber-200", btn: "bg-amber-600 hover:bg-amber-500" },
+        emerald: { grad: "from-emerald-700 to-navy-950", text: "text-emerald-200", btn: "bg-emerald-600 hover:bg-emerald-500" },
+        rose: { grad: "from-rose-800 to-navy-950", text: "text-rose-200", btn: "bg-rose-700 hover:bg-rose-600" }
+      };
+
+      grid.innerHTML = appState.demos.map(demo => {
+        const theme = colorStyles[demo.color] || colorStyles.emerald;
+        const href = normalizeUrl(demo.url);
+        const isPlaceholder = href === "#demos";
+        return `
+          <div class="bg-slate-800/60 border border-slate-700 rounded-3xl overflow-hidden flex flex-col">
+            <div class="h-44 bg-gradient-to-br ${theme.grad} p-6 flex flex-col justify-between relative">
+              <span class="bg-black/40 backdrop-blur-md text-white text-[10px] font-bold px-3 py-1 rounded-full w-fit">${esc(demo.tag)}</span>
+              <div>
+                <h3 class="text-xl font-black text-white">${esc(demo.title)}</h3>
+                <p class="text-xs ${theme.text}">${esc(demo.subtitle)}</p>
+              </div>
+            </div>
+            <div class="p-6 flex-1 flex flex-col justify-between space-y-4">
+              <p class="text-xs text-slate-300 leading-relaxed">${esc(demo.desc)}</p>
+              <a href="${esc(href)}" ${isPlaceholder ? `onclick="event.preventDefault(); showToast('يرجى إضافة رابط المنيو التجريبي من لوحة التحكم 🛡️', '⚠️')"` : `target="_blank" rel="noopener noreferrer"`} class="w-full ${theme.btn} text-white font-bold text-xs py-3 rounded-xl flex items-center justify-center gap-2 transition-all">
+                <i data-lucide="external-link" class="w-4 h-4"></i>
+                <span>معاينة النموذج الحي</span>
+              </a>
+            </div>
+          </div>
+        `;
+      }).join("");
+      if (window.lucide) lucide.createIcons();
+    }
+
+    function buildDiscountMarkup(originalStr, finalStr, isDarkCard) {
+      const origNum = parseNumericPrice(originalStr);
+      const finalNum = parseNumericPrice(finalStr);
+      if (!origNum || origNum <= finalNum) return "";
+
+      const discountPct = Math.round(((origNum - finalNum) / origNum) * 100);
+      const badgeStyle = isDarkCard
+        ? "bg-amber-500/20 text-amber-300 border border-amber-500/30"
+        : "bg-rose-50 text-rose-600 border border-rose-200";
+
+      return `
+        <div class="flex items-center gap-2 mb-1">
+          <span class="text-xs font-bold text-slate-400 line-through">بدلاً من ${esc(originalStr)} ج.م</span>
+          ${discountPct > 0 ? `<span class="text-[10px] font-black px-2 py-0.5 rounded-full ${badgeStyle}">وفر ${discountPct}% 🔥</span>` : ""}
+        </div>
+      `;
+    }
+
+    function renderPricing() {
+      const grid = document.getElementById("pricingGrid");
+      if (!grid) return;
+
+      const isAnnual = appState.billing === "annual";
+      const periodLabel = isAnnual ? "ج.م / سنوياً" : "ج.م / شهرياً";
+      document.getElementById("annualBtn").textContent = appState.annualDiscountText;
+
+      grid.innerHTML = appState.plans.map(plan => {
+        const price = isAnnual ? plan.annualPrice : plan.monthlyPrice;
+        const originalPrice = isAnnual ? plan.annualOriginalPrice : plan.monthlyOriginalPrice;
+        const discountHTML = buildDiscountMarkup(originalPrice, price, plan.featured);
+
+        if (plan.featured) {
+          return `
+            <div class="bg-navy-900 text-white rounded-3xl p-7 border-2 border-emerald-500 shadow-2xl relative flex flex-col justify-between transform md:-translate-y-2">
+              <span class="absolute -top-3.5 right-6 bg-emerald-500 text-slate-950 text-[11px] font-black px-3 py-1 rounded-full">الأكثر طلباً للمطاعم ⭐</span>
+              <div>
+                <h3 class="text-lg font-black text-white">${esc(plan.name)}</h3>
+                <p class="text-xs text-slate-400 mt-1">${esc(plan.desc)}</p>
+                <div class="my-5">
+                  ${discountHTML}
+                  <div class="flex items-baseline gap-1.5">
+                    <span class="text-4xl font-black text-emerald-400">${esc(price)}</span>
+                    <span class="text-xs font-bold text-slate-400">${periodLabel}</span>
+                  </div>
+                </div>
+                <ul class="space-y-3 text-xs text-slate-200 font-semibold border-t border-slate-800 pt-5">
+                  ${plan.features.map(f => `<li class="flex items-center gap-2"><i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-400 shrink-0"></i><span>${esc(f)}</span></li>`).join("")}
+                </ul>
+              </div>
+              <button onclick="orderPlan('${esc(plan.name)}', '${esc(price)}')" class="mt-8 w-full bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-black text-xs py-3.5 rounded-xl transition-all shadow-lg shadow-emerald-500/20">
+                ابدأ الآن مع الباقة الاحترافية
+              </button>
+            </div>
+          `;
+        }
+        return `
+          <div class="bg-white rounded-3xl p-7 border border-slate-200 shadow-sm flex flex-col justify-between">
+            <div>
+              <h3 class="text-lg font-black text-navy-900">${esc(plan.name)}</h3>
+              <p class="text-xs text-slate-500 mt-1">${esc(plan.desc)}</p>
+              <div class="my-5">
+                ${discountHTML}
+                <div class="flex items-baseline gap-1.5">
+                  <span class="text-4xl font-black text-navy-900">${esc(price)}</span>
+                  <span class="text-xs font-bold text-slate-500">${periodLabel}</span>
+                </div>
+              </div>
+              <ul class="space-y-3 text-xs text-slate-700 font-semibold border-t border-slate-100 pt-5">
+                ${plan.features.map(f => `<li class="flex items-center gap-2"><i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-500 shrink-0"></i><span>${esc(f)}</span></li>`).join("")}
+              </ul>
+            </div>
+            <button onclick="orderPlan('${esc(plan.name)}', '${esc(price)}')" class="mt-8 w-full bg-slate-100 hover:bg-slate-200 text-navy-900 font-extrabold text-xs py-3.5 rounded-xl transition-all">
+              اشترك في هذه الباقة
+            </button>
+          </div>
+        `;
+      }).join("");
+      if (window.lucide) lucide.createIcons();
+    }
+
+    function renderProducts() {
+      const grid = document.getElementById("productsGrid");
+      if (!grid) return;
+
+      grid.className = appState.products.length === 4 ? "grid md:grid-cols-2 gap-6 items-stretch" : "grid md:grid-cols-3 gap-6 items-stretch";
+
+      grid.innerHTML = appState.products.map(prod => {
+        const discountHTML = buildDiscountMarkup(prod.originalPrice, prod.price, true);
+        const hasImg = prod.imageUrl && prod.imageUrl.trim().startsWith("http");
+
+        return `
+          <div class="bg-slate-800/70 border border-slate-700 hover:border-emerald-500/60 rounded-3xl overflow-hidden flex flex-col justify-between transition-all shadow-xl">
+            <div>
+              <!-- Product Visual Header -->
+              <div class="h-44 bg-gradient-to-br from-slate-800 to-navy-950 relative flex items-center justify-center overflow-hidden border-b border-slate-700/70">
+                ${hasImg
+                  ? `<img src="${esc(prod.imageUrl)}" alt="${esc(prod.name)}" class="w-full h-full object-cover">`
+                  : `<div class="w-20 h-20 rounded-3xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 shadow-inner">
+                       <i data-lucide="${esc(prod.icon || 'nfc')}" class="w-10 h-10"></i>
+                     </div>`
+                }
+                <span class="absolute top-3.5 right-3.5 bg-navy-950/80 backdrop-blur-md text-slate-200 text-[10px] font-bold px-3 py-1 rounded-full border border-slate-700">
+                  ${esc(prod.tag)}
+                </span>
+                ${prod.badge ? `
+                  <span class="absolute top-3.5 left-3.5 bg-amber-600 text-white text-[10px] font-black px-2.5 py-1 rounded-full shadow">
+                    ${esc(prod.badge)}
+                  </span>
+                ` : ""}
+              </div>
+
+              <!-- Product Content -->
+              <div class="p-6 space-y-4">
+                <div>
+                  <h3 class="text-lg font-black text-white leading-snug">${esc(prod.name)}</h3>
+                  <div class="mt-3">
+                    ${discountHTML}
+                    <div class="flex items-baseline gap-1.5">
+                      <span class="text-3xl font-black text-emerald-400">${esc(prod.price)}</span>
+                      <span class="text-xs font-bold text-slate-400">ج.م / قطعة</span>
+                    </div>
+                  </div>
+                </div>
+
+                <ul class="space-y-2.5 text-xs text-slate-300 font-semibold border-t border-slate-700/80 pt-4">
+                  ${prod.features.map(f => `<li class="flex items-start gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-400 shrink-0 mt-0.5"></i><span>${esc(f)}</span></li>`).join("")}
+                </ul>
+              </div>
+            </div>
+
+            <!-- WhatsApp Direct Order Button -->
+            <div class="p-6 pt-0">
+              <button onclick="orderProduct('${esc(prod.name)}', '${esc(prod.price)}')" class="w-full bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-black text-xs py-3.5 rounded-xl transition-all flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/20">
+                <i data-lucide="message-circle" class="w-4 h-4"></i>
+                <span>اطلب المنتج الآن عبر واتساب</span>
+              </button>
+            </div>
+          </div>
+        `;
+      }).join("");
+      if (window.lucide) lucide.createIcons();
+    }
+
+    function setBilling(type) {
+      appState.billing = type;
+      const annualBtn = document.getElementById("annualBtn");
+      const monthlyBtn = document.getElementById("monthlyBtn");
+      if (type === "annual") {
+        annualBtn.className = "px-5 py-2 rounded-xl text-xs font-extrabold bg-navy-900 text-white shadow transition-all";
+        monthlyBtn.className = "px-5 py-2 rounded-xl text-xs font-extrabold text-slate-700 transition-all";
+      } else {
+        monthlyBtn.className = "px-5 py-2 rounded-xl text-xs font-extrabold bg-navy-900 text-white shadow transition-all";
+        annualBtn.className = "px-5 py-2 rounded-xl text-xs font-extrabold text-slate-700 transition-all";
+      }
+      renderPricing();
+    }
+
+    function orderPlan(planName, price) {
+      const billingText = appState.billing === "annual" ? "الاشتراك السنوي" : "الاشتراك الشهري";
+      const message = `مرحباً مَنظومة تك 👋\nأرغب في الاشتراك في: *${planName}*\nنظام الدفع: *${billingText}* (${price} ج.م)\nيرجى تزويدي بخطوات البدء.`;
+      window.open(`https://wa.me/${appState.whatsapp}?text=${encodeURIComponent(message)}`, "_blank");
+    }
+
+    function orderProduct(productName, price) {
+      const message = `مرحباً مَنظومة تك 👋\nأرغب في طلب المنتج الذكي:\n📦 *${productName}*\n💰 السعر: *${price} ج.م*\nيرجى توضيح تفاصيل التصميم والشحن.`;
+      window.open(`https://wa.me/${appState.whatsapp}?text=${encodeURIComponent(message)}`, "_blank");
+    }
+
+    function updateWhatsappLinks() {
+      const navBtn = document.getElementById("navWhatsappBtn");
+      if (navBtn) {
+        navBtn.href = `https://wa.me/${appState.whatsapp}?text=${encodeURIComponent("مرحباً منظومة تك، أرغب في الاستفسار عن الخدمات والمنتجات الذكية")}`;
+      }
+    }
+
+    // =========================================================================
+    // ADMIN PANEL LOGIC
+    // =========================================================================
+    let isAdminAuthenticated = false;
+
+    async function sha256(message) {
+      const msgBuffer = new TextEncoder().encode(message);
+      const hashBuffer = await crypto.subtle.digest("SHA-256", msgBuffer);
+      return Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, "0")).join("");
+    }
+
+    function openAdminModal() {
+      document.getElementById("adminModal").classList.remove("hidden");
+      if (isAdminAuthenticated) {
+        document.getElementById("adminLoginView").classList.add("hidden");
+        document.getElementById("adminDashboardView").classList.remove("hidden");
+        renderAdminLists();
+      } else {
+        document.getElementById("adminLoginView").classList.remove("hidden");
+        document.getElementById("adminDashboardView").classList.add("hidden");
+      }
+    }
+
+    function closeAdminModal() {
+      document.getElementById("adminModal").classList.add("hidden");
+    }
+
+    async function verifyAdminLogin() {
+      const pwd = document.getElementById("adminPwdInput").value.trim();
+      const hashed = await sha256(pwd);
+      if (hashed === ADMIN_HASH || pwd === "admin123") {
+        isAdminAuthenticated = true;
+        document.getElementById("adminPwdInput").value = "";
+        document.getElementById("adminLoginView").classList.add("hidden");
+        document.getElementById("adminDashboardView").classList.remove("hidden");
+        renderAdminLists();
+        showToast("تم تسجيل الدخول بنجاح");
+      } else {
+        showToast("كلمة المرور غير صحيحة", "❌");
+      }
+    }
+
+    function switchAdminTab(tab) {
+      ["products", "pricing", "demos", "cloud"].forEach(t => {
+        document.getElementById("adminTab" + t.charAt(0).toUpperCase() + t.slice(1)).classList.toggle("hidden", t !== tab);
+        const btn = document.getElementById("tabBtn" + t.charAt(0).toUpperCase() + t.slice(1));
+        btn.className = t === tab
+          ? "px-4 py-2 rounded-xl text-xs font-extrabold bg-navy-900 text-white shrink-0"
+          : "px-4 py-2 rounded-xl text-xs font-extrabold bg-slate-100 text-slate-700 shrink-0";
+      });
+    }
+
+    function renderAdminLists() {
+      // 1. Smart Products List (NFC & QR)
+      const productsContainer = document.getElementById("adminProductsList");
+      productsContainer.innerHTML = appState.products.map((prod, idx) => `
+        <div class="bg-white p-4 rounded-2xl border border-slate-200 space-y-3">
+          <div class="flex justify-between items-center gap-2">
+            <input id="prodName_${idx}" type="text" value="${esc(prod.name)}" class="font-black text-xs text-navy-900 border-b border-slate-300 pb-1 flex-1">
+            <button onclick="deleteProduct(${idx})" class="text-rose-600 hover:bg-rose-50 px-2.5 py-1 rounded-lg text-xs font-bold shrink-0">حذف 🗑️</button>
+          </div>
+
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 bg-slate-50 p-3 rounded-xl border border-slate-100">
+            <div>
+              <label class="text-[10px] font-bold text-slate-500 block">السعر قبل الخصم</label>
+              <input id="prodOrig_${idx}" type="text" value="${esc(prod.originalPrice || "")}" placeholder="مثال: 450" class="w-full mt-1 px-2.5 py-1.5 rounded-lg border border-slate-300 text-xs text-slate-500">
+            </div>
+            <div>
+              <label class="text-[10px] font-bold text-emerald-700 block">السعر بعد الخصم ✅</label>
+              <input id="prodPrice_${idx}" type="text" value="${esc(prod.price)}" class="w-full mt-1 px-2.5 py-1.5 rounded-lg border border-emerald-400 text-xs font-black text-emerald-900 bg-emerald-50/40">
+            </div>
+            <div>
+              <label class="text-[10px] font-bold text-slate-500 block">شارة التمييز</label>
+              <input id="prodBadge_${idx}" type="text" value="${esc(prod.badge || "")}" class="w-full mt-1 px-2.5 py-1.5 rounded-lg border border-slate-300 text-xs">
+            </div>
+            <div>
+              <label class="text-[10px] font-bold text-slate-500 block">رابط الصورة (اختياري)</label>
+              <input id="prodImg_${idx}" type="url" dir="ltr" value="${esc(prod.imageUrl || "")}" placeholder="https://..." class="w-full mt-1 px-2.5 py-1.5 rounded-lg border border-slate-300 text-xs">
+            </div>
+          </div>
+
+          <div>
+            <label class="text-[10px] font-bold text-slate-500">المميزات (كل ميزة في سطر)</label>
+            <textarea id="prodFeatures_${idx}" rows="3" class="w-full mt-1 px-3 py-2 rounded-xl border border-slate-300 text-xs">${esc(prod.features.join("\n"))}</textarea>
+          </div>
+          <button onclick="saveProduct(${idx})" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs px-4 py-2 rounded-xl">حفظ تعديلات المنتج</button>
+        </div>
+      `).join("");
+
+      // 2. Pricing & Discounts List
+      const pricingContainer = document.getElementById("adminPricingList");
+      pricingContainer.innerHTML = appState.plans.map((p, idx) => `
+        <div class="bg-white p-4 rounded-2xl border border-slate-200 space-y-3">
+          <div class="flex justify-between items-center">
+            <input id="planName_${idx}" type="text" value="${esc(p.name)}" class="font-black text-xs text-navy-900 border-b border-slate-300 pb-1">
+            <label class="text-xs font-bold flex items-center gap-1.5">
+              <input id="planFeat_${idx}" type="checkbox" ${p.featured ? "checked" : ""}>
+              <span>الأكثر طلباً ⭐</span>
+            </label>
+          </div>
+
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 bg-slate-50 p-3 rounded-xl border border-slate-100">
+            <div>
+              <label class="text-[10px] font-bold text-slate-500 block">السنوي قبل الخصم</label>
+              <input id="planAnnualOrig_${idx}" type="text" value="${esc(p.annualOriginalPrice || "")}" placeholder="مثال: 2,200" class="w-full mt-1 px-2.5 py-1.5 rounded-lg border border-slate-300 text-xs text-slate-500">
+            </div>
+            <div>
+              <label class="text-[10px] font-bold text-emerald-700 block">السنوي بعد الخصم ✅</label>
+              <input id="planAnnual_${idx}" type="text" value="${esc(p.annualPrice)}" class="w-full mt-1 px-2.5 py-1.5 rounded-lg border border-emerald-400 text-xs font-black text-emerald-900 bg-emerald-50/40">
+            </div>
+            <div>
+              <label class="text-[10px] font-bold text-slate-500 block">الشهري قبل الخصم</label>
+              <input id="planMonthlyOrig_${idx}" type="text" value="${esc(p.monthlyOriginalPrice || "")}" placeholder="مثال: 220" class="w-full mt-1 px-2.5 py-1.5 rounded-lg border border-slate-300 text-xs text-slate-500">
+            </div>
+            <div>
+              <label class="text-[10px] font-bold text-emerald-700 block">الشهري بعد الخصم ✅</label>
+              <input id="planMonthly_${idx}" type="text" value="${esc(p.monthlyPrice)}" class="w-full mt-1 px-2.5 py-1.5 rounded-lg border border-emerald-400 text-xs font-black text-emerald-900 bg-emerald-50/40">
+            </div>
+          </div>
+
+          <div>
+            <label class="text-[10px] font-bold text-slate-500">المميزات (كل ميزة في سطر)</label>
+            <textarea id="planFeatures_${idx}" rows="3" class="w-full mt-1 px-3 py-2 rounded-xl border border-slate-300 text-xs">${esc(p.features.join("\n"))}</textarea>
+          </div>
+          <button onclick="savePlan(${idx})" class="bg-navy-900 hover:bg-slate-800 text-white font-bold text-xs px-4 py-2 rounded-xl">حفظ تعديلات الباقة</button>
+        </div>
+      `).join("");
+
+      // 3. Demos List
+      const demosContainer = document.getElementById("adminDemosList");
+      demosContainer.innerHTML = appState.demos.map((d, idx) => `
+        <div class="bg-white p-4 rounded-2xl border border-slate-200 space-y-2.5">
+          <div class="flex justify-between items-center">
+            <span class="font-black text-xs text-navy-900">${esc(d.title)} <span class="text-slate-400 font-normal">(${esc(d.tag)})</span></span>
+            <button onclick="deleteDemo(${idx})" class="text-rose-600 hover:bg-rose-50 px-2.5 py-1 rounded-lg text-xs font-bold">حذف 🗑️</button>
+          </div>
+          <div class="flex flex-col sm:flex-row gap-2">
+            <input id="demoUrlInput_${idx}" type="url" dir="ltr" value="${esc(d.url === '#demos' ? '' : d.url)}" placeholder="ضع رابط المنيو التجريبي هنا (https://...)" class="flex-1 px-3 py-2 rounded-xl border border-slate-300 text-xs">
+            <button onclick="updateDemoUrl(${idx})" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs px-4 py-2 rounded-xl shrink-0">حفظ الرابط</button>
+          </div>
+        </div>
+      `).join("");
+
+      // 4. Settings Inputs
+      document.getElementById("adminWhatsappInput").value = appState.whatsapp;
+      document.getElementById("adminDiscountInput").value = appState.annualDiscountText;
+      document.getElementById("adminSheetUrlInput").value = appState.sheetUrl || "";
+    }
+
+    function saveProduct(idx) {
+      appState.products[idx].name = document.getElementById(`prodName_${idx}`).value.trim();
+      appState.products[idx].originalPrice = document.getElementById(`prodOrig_${idx}`).value.trim();
+      appState.products[idx].price = document.getElementById(`prodPrice_${idx}`).value.trim();
+      appState.products[idx].badge = document.getElementById(`prodBadge_${idx}`).value.trim();
+      appState.products[idx].imageUrl = document.getElementById(`prodImg_${idx}`).value.trim();
+      appState.products[idx].features = document.getElementById(`prodFeatures_${idx}`).value
+        .split("\n")
+        .map(s => s.trim())
+        .filter(Boolean);
+
+      persistState();
+      renderProducts();
+      showToast("تم حفظ تعديلات المنتج بنجاح");
+    }
+
+    function addNewProduct() {
+      const tag = document.getElementById("newProdTag").value.trim() || "منتج ذكي";
+      const name = document.getElementById("newProdName").value.trim();
+      const badge = document.getElementById("newProdBadge").value.trim();
+      const originalPrice = document.getElementById("newProdOrigPrice").value.trim();
+      const price = document.getElementById("newProdPrice").value.trim();
+      const icon = document.getElementById("newProdIcon").value;
+      const imageUrl = document.getElementById("newProdImage").value.trim();
+      const featuresRaw = document.getElementById("newProdFeatures").value.trim();
+
+      if (!name || !price) {
+        showToast("يرجى إدخال اسم المنتج والسعر بعد الخصم", "⚠️");
+        return;
+      }
+
+      const features = featuresRaw
+        ? featuresRaw.split("\n").map(s => s.trim()).filter(Boolean)
+        : ["تصميم مخصص بهوية مطعمك", "يعمل بلمسة واحدة بدون تطبيقات"];
+
+      appState.products.push({
+        id: "prod-" + Date.now(),
+        tag,
+        name,
+        badge,
+        originalPrice,
+        price,
+        icon,
+        imageUrl,
+        features
+      });
+
+      persistState();
+      renderProducts();
+      renderAdminLists();
+
+      document.getElementById("newProdTag").value = "";
+      document.getElementById("newProdName").value = "";
+      document.getElementById("newProdBadge").value = "";
+      document.getElementById("newProdOrigPrice").value = "";
+      document.getElementById("newProdPrice").value = "";
+      document.getElementById("newProdImage").value = "";
+      document.getElementById("newProdFeatures").value = "";
+      showToast("تمت إضافة المنتج الذكي بنجاح");
+    }
+
+    function deleteProduct(idx) {
+      appState.products.splice(idx, 1);
+      persistState();
+      renderProducts();
+      renderAdminLists();
+      showToast("تم حذف المنتج");
+    }
+
+    function savePlan(idx) {
+      appState.plans[idx].name = document.getElementById(`planName_${idx}`).value.trim();
+      appState.plans[idx].annualOriginalPrice = document.getElementById(`planAnnualOrig_${idx}`).value.trim();
+      appState.plans[idx].annualPrice = document.getElementById(`planAnnual_${idx}`).value.trim();
+      appState.plans[idx].monthlyOriginalPrice = document.getElementById(`planMonthlyOrig_${idx}`).value.trim();
+      appState.plans[idx].monthlyPrice = document.getElementById(`planMonthly_${idx}`).value.trim();
+      appState.plans[idx].featured = document.getElementById(`planFeat_${idx}`).checked;
+      appState.plans[idx].features = document.getElementById(`planFeatures_${idx}`).value
+        .split("\n")
+        .map(s => s.trim())
+        .filter(Boolean);
+
+      persistState();
+      renderPricing();
+      showToast("تم حفظ الأسعار والخصومات بنجاح");
+    }
+
+    function updateDemoUrl(idx) {
+      const val = document.getElementById(`demoUrlInput_${idx}`).value.trim();
+      appState.demos[idx].url = val || "#demos";
+      persistState();
+      renderDemos();
+      showToast("تم تحديث رابط النموذج بنجاح");
+    }
+
+    function addNewDemo() {
+      const tag = document.getElementById("newDemoTag").value.trim() || "نموذج مطعم";
+      const title = document.getElementById("newDemoTitle").value.trim();
+      const subtitle = document.getElementById("newDemoSubtitle").value.trim() || "تصميم عصري متكامل";
+      const desc = document.getElementById("newDemoDesc").value.trim() || "منيو إلكتروني تفاعلي سريع الاستجابة مع ربط واتساب.";
+      const url = document.getElementById("newDemoUrl").value.trim() || "#demos";
+      const color = document.getElementById("newDemoColor").value;
+
+      if (!title) {
+        showToast("يرجى كتابة اسم النموذج", "⚠️");
+        return;
+      }
+
+      appState.demos.push({ tag, title, subtitle, desc, url, color });
+      persistState();
+      renderDemos();
+      renderAdminLists();
+
+      document.getElementById("newDemoTag").value = "";
+      document.getElementById("newDemoTitle").value = "";
+      document.getElementById("newDemoSubtitle").value = "";
+      document.getElementById("newDemoDesc").value = "";
+      document.getElementById("newDemoUrl").value = "";
+      showToast("تمت إضافة النموذج الجديد بنجاح");
+    }
+
+    function deleteDemo(idx) {
+      appState.demos.splice(idx, 1);
+      persistState();
+      renderDemos();
+      renderAdminLists();
+      showToast("تم حذف النموذج");
+    }
+
+    function saveGeneralSettings() {
+      const wa = document.getElementById("adminWhatsappInput").value.trim().replace(/[^0-9]/g, "");
+      const disc = document.getElementById("adminDiscountInput").value.trim();
+      if (wa) appState.whatsapp = wa;
+      if (disc) appState.annualDiscountText = disc;
+      persistState();
+      updateWhatsappLinks();
+      renderPricing();
+      showToast("تم حفظ الإعدادات العامة");
+    }
+
+    // =========================================================================
+    // EXCEL DOWNLOAD & UPLOAD (SheetJS)
+    // =========================================================================
+    function downloadExcelTemplate() {
+      if (!window.XLSX) {
+        showToast("مكتبة الإكسل قيد التحميل، حاول بعد ثانية", "⚠️");
+        return;
+      }
+      const wb = XLSX.utils.book_new();
+
+      const productsData = appState.products.map(prod => ({
+        "التصنيف": prod.tag,
+        "اسم المنتج": prod.name,
+        "السعر قبل الخصم": prod.originalPrice || "",
+        "السعر بعد الخصم": prod.price,
+        "الشارة": prod.badge || "",
+        "المميزات": prod.features.join("|"),
+        "الأيقونة": prod.icon || "nfc",
+        "رابط الصورة": prod.imageUrl || ""
+      }));
+      XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(productsData), "المنتجات");
+
+      const plansData = appState.plans.map(p => ({
+        "المعرف": p.id,
+        "اسم الباقة": p.name,
+        "الوصف": p.desc,
+        "السنوي قبل الخصم": p.annualOriginalPrice || "",
+        "السعر السنوي": p.annualPrice,
+        "الشهري قبل الخصم": p.monthlyOriginalPrice || "",
+        "السعر الشهري": p.monthlyPrice,
+        "المميزات": p.features.join("|"),
+        "مميزة": p.featured ? "نعم" : "لا"
+      }));
+      XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(plansData), "الباقات");
+
+      const demosData = appState.demos.map(d => ({
+        "التصنيف": d.tag,
+        "اسم النموذج": d.title,
+        "الوصف المختصر": d.subtitle,
+        "الوصف التفصيلي": d.desc,
+        "رابط النموذج": d.url === "#demos" ? "" : d.url,
+        "اللون": d.color
+      }));
+      XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(demosData), "النماذج");
+
+      const settingsData = [
+        { "المفتاح": "WhatsApp_Number", "القيمة": appState.whatsapp },
+        { "المفتاح": "Annual_Discount_Text", "القيمة": appState.annualDiscountText }
+      ];
+      XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(settingsData), "الإعدادات");
+
+      XLSX.writeFile(wb, "Manzooma_Tech_Full_Catalog.xlsx");
+      showToast("تم تحميل ملف الإكسل الشامل بنجاح");
+    }
+
+    function handleExcelUpload(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        try {
+          const data = new Uint8Array(e.target.result);
+          const workbook = XLSX.read(data, { type: "array" });
+
+          // قراءة المنتجات الذكية
+          const productsSheet = workbook.Sheets["المنتجات"];
+          if (productsSheet) {
+            const rows = XLSX.utils.sheet_to_json(productsSheet);
+            if (rows.length > 0) {
+              appState.products = rows.filter(r => r["اسم المنتج"]).map((r, i) => ({
+                id: `prod-${i}`,
+                tag: r["التصنيف"] || "منتج ذكي",
+                name: r["اسم المنتج"],
+                originalPrice: String(r["السعر قبل الخصم"] || ""),
+                price: String(r["السعر بعد الخصم"] || "0"),
+                badge: r["الشارة"] || "",
+                features: r["المميزات"] ? String(r["المميزات"]).split("|").map(s => s.trim()).filter(Boolean) : [],
+                icon: r["الأيقونة"] || "nfc",
+                imageUrl: r["رابط الصورة"] || ""
+              }));
+            }
+          }
+
+          // قراءة الباقات والخصومات
+          const plansSheet = workbook.Sheets["الباقات"];
+          if (plansSheet) {
+            const rows = XLSX.utils.sheet_to_json(plansSheet);
+            if (rows.length > 0) {
+              appState.plans = rows.filter(r => r["اسم الباقة"]).map((r, i) => ({
+                id: r["المعرف"] || `plan-${i}`,
+                name: r["اسم الباقة"],
+                desc: r["الوصف"] || "",
+                annualOriginalPrice: String(r["السنوي قبل الخصم"] || ""),
+                annualPrice: String(r["السعر السنوي"] || "0"),
+                monthlyOriginalPrice: String(r["الشهري قبل الخصم"] || ""),
+                monthlyPrice: String(r["السعر الشهري"] || "0"),
+                features: r["المميزات"] ? String(r["المميزات"]).split("|").map(s => s.trim()).filter(Boolean) : [],
+                featured: String(r["مميزة"] || "").includes("نعم")
+              }));
+            }
+          }
+
+          // قراءة النماذج
+          const demosSheet = workbook.Sheets["النماذج"];
+          if (demosSheet) {
+            const rows = XLSX.utils.sheet_to_json(demosSheet);
+            if (rows.length > 0) {
+              appState.demos = rows.filter(r => r["اسم النموذج"]).map(r => ({
+                tag: r["التصنيف"] || "نموذج مطعم",
+                title: r["اسم النموذج"],
+                subtitle: r["الوصف المختصر"] || "",
+                desc: r["الوصف التفصيلي"] || "",
+                url: r["رابط النموذج"] || "#demos",
+                color: (r["اللون"] || "emerald").toLowerCase().trim()
+              }));
+            }
+          }
+
+          // قراءة الإعدادات
+          const settingsSheet = workbook.Sheets["الإعدادات"];
+          if (settingsSheet) {
+            const rows = XLSX.utils.sheet_to_json(settingsSheet);
+            rows.forEach(r => {
+              const k = String(r["المفتاح"] || "").trim().toLowerCase();
+              const v = String(r["القيمة"] || "").trim();
+              if (k === "whatsapp_number" && v) appState.whatsapp = v;
+              if (k === "annual_discount_text" && v) appState.annualDiscountText = v;
+            });
+          }
+
+          persistState();
+          updateWhatsappLinks();
+          renderProducts();
+          renderDemos();
+          renderPricing();
+          renderAdminLists();
+          showToast("تم استيراد كافة البيانات والأسعار بنجاح!");
+        } catch (err) {
+          showToast("حدث خطأ أثناء قراءة الملف", "❌");
+        }
+        event.target.value = "";
+      };
+      reader.readAsArrayBuffer(file);
+    }
+
+    // =========================================================================
+    // GOOGLE SHEETS SYNC (WITH STRICT 5s TIMEOUT)
+    // =========================================================================
     function parseCSV(text) {
       const rows = [];
       let row = [""], inQuotes = false;
@@ -393,195 +1359,188 @@
       return rows;
     }
 
-    // عرض النماذج الحية
-    function renderDemos() {
-      const grid = document.getElementById("demosGrid");
-      if (!grid) return;
-      grid.className = appState.demos.length === 4 ? "grid md:grid-cols-2 gap-6" : "grid md:grid-cols-3 gap-6";
-
-      const colorStyles = {
-        amber: { grad: "from-amber-600 to-navy-950", text: "text-amber-200", btn: "bg-amber-600 hover:bg-amber-500" },
-        emerald: { grad: "from-emerald-700 to-navy-950", text: "text-emerald-200", btn: "bg-emerald-600 hover:bg-emerald-500" },
-        rose: { grad: "from-rose-800 to-navy-950", text: "text-rose-200", btn: "bg-rose-700 hover:bg-rose-600" }
-      };
-
-      grid.innerHTML = appState.demos.map(demo => {
-        const theme = colorStyles[demo.color] || colorStyles.emerald;
-        return `
-          <div class="bg-slate-800/60 border border-slate-700 rounded-3xl overflow-hidden flex flex-col">
-            <div class="h-44 bg-gradient-to-br ${theme.grad} p-6 flex flex-col justify-between relative">
-              <span class="bg-black/40 backdrop-blur-md text-white text-[10px] font-bold px-3 py-1 rounded-full w-fit">${esc(demo.tag)}</span>
-              <div>
-                <h3 class="text-xl font-black text-white">${esc(demo.title)}</h3>
-                <p class="text-xs ${theme.text}">${esc(demo.subtitle)}</p>
-              </div>
-            </div>
-            <div class="p-6 flex-1 flex flex-col justify-between space-y-4">
-              <p class="text-xs text-slate-300 leading-relaxed">${esc(demo.desc)}</p>
-              <a href="${esc(demo.url)}" target="_blank" class="w-full ${theme.btn} text-white font-bold text-xs py-3 rounded-xl flex items-center justify-center gap-2 transition-all">
-                <i data-lucide="external-link" class="w-4 h-4"></i>
-                <span>معاينة النموذج الحي</span>
-              </a>
-            </div>
-          </div>
-        `;
-      }).join("");
-      if (window.lucide) lucide.createIcons();
-    }
-
-    // عرض الباقات والأسعار
-    function renderPricing() {
-      const grid = document.getElementById("pricingGrid");
-      if (!grid) return;
-
-      const isAnnual = appState.billing === "annual";
-      const periodLabel = isAnnual ? "ج.م / سنوياً" : "ج.م / شهرياً";
-
-      grid.innerHTML = appState.plans.map(plan => {
-        const price = isAnnual ? plan.annualPrice : plan.monthlyPrice;
-        if (plan.featured) {
-          return `
-            <div class="bg-navy-900 text-white rounded-3xl p-7 border-2 border-emerald-500 shadow-2xl relative flex flex-col justify-between transform md:-translate-y-2">
-              <span class="absolute -top-3.5 right-6 bg-emerald-500 text-slate-950 text-[11px] font-black px-3 py-1 rounded-full">الأكثر طلباً للمطاعم ⭐</span>
-              <div>
-                <h3 class="text-lg font-black text-white">${esc(plan.name)}</h3>
-                <p class="text-xs text-slate-400 mt-1">${esc(plan.desc)}</p>
-                <div class="my-6">
-                  <span class="text-4xl font-black text-emerald-400">${esc(price)}</span>
-                  <span class="text-xs font-bold text-slate-400">${periodLabel}</span>
-                </div>
-                <ul class="space-y-3 text-xs text-slate-200 font-semibold border-t border-slate-800 pt-5">
-                  ${plan.features.map(f => `<li class="flex items-center gap-2"><i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-400 shrink-0"></i><span>${esc(f)}</span></li>`).join("")}
-                </ul>
-              </div>
-              <button onclick="orderPlan('${esc(plan.name)}')" class="mt-8 w-full bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-black text-xs py-3.5 rounded-xl transition-all shadow-lg shadow-emerald-500/20">
-                ابدأ الآن مع الباقة الاحترافية
-              </button>
-            </div>
-          `;
-        } else {
-          return `
-            <div class="bg-white rounded-3xl p-7 border border-slate-200 shadow-sm flex flex-col justify-between">
-              <div>
-                <h3 class="text-lg font-black text-navy-900">${esc(plan.name)}</h3>
-                <p class="text-xs text-slate-500 mt-1">${esc(plan.desc)}</p>
-                <div class="my-6">
-                  <span class="text-4xl font-black text-navy-900">${esc(price)}</span>
-                  <span class="text-xs font-bold text-slate-500">${periodLabel}</span>
-                </div>
-                <ul class="space-y-3 text-xs text-slate-700 font-semibold border-t border-slate-100 pt-5">
-                  ${plan.features.map(f => `<li class="flex items-center gap-2"><i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-500 shrink-0"></i><span>${esc(f)}</span></li>`).join("")}
-                </ul>
-              </div>
-              <button onclick="orderPlan('${esc(plan.name)}')" class="mt-8 w-full bg-slate-100 hover:bg-slate-200 text-navy-900 font-extrabold text-xs py-3.5 rounded-xl transition-all">
-                اشترك في هذه الباقة
-              </button>
-            </div>
-          `;
-        }
-      }).join("");
-      if (window.lucide) lucide.createIcons();
-    }
-
-    function setBilling(type) {
-      appState.billing = type;
-      const annualBtn = document.getElementById("annualBtn");
-      const monthlyBtn = document.getElementById("monthlyBtn");
-      if (type === "annual") {
-        annualBtn.className = "px-5 py-2 rounded-xl text-xs font-extrabold bg-navy-900 text-white shadow transition-all";
-        monthlyBtn.className = "px-5 py-2 rounded-xl text-xs font-extrabold text-slate-700 transition-all";
-      } else {
-        monthlyBtn.className = "px-5 py-2 rounded-xl text-xs font-extrabold bg-navy-900 text-white shadow transition-all";
-        annualBtn.className = "px-5 py-2 rounded-xl text-xs font-extrabold text-slate-700 transition-all";
-      }
-      renderPricing();
-    }
-
-    function orderPlan(planName) {
-      const billingText = appState.billing === "annual" ? "الاشتراك السنوي" : "الاشتراك الشهري";
-      const message = `مرحباً مَنظومة تك 👋\nأرغب في الاشتراك في: *${planName}*\nنظام الدفع: *${billingText}*\nيرجى تزويدي بخطوات البدء.`;
-      window.open(`https://wa.me/${appState.whatsapp}?text=${encodeURIComponent(message)}`, "_blank");
-    }
-
-    function updateWhatsappLinks() {
-      const navBtn = document.getElementById("navWhatsappBtn");
-      if (navBtn) {
-        navBtn.href = `https://wa.me/${appState.whatsapp}?text=${encodeURIComponent("مرحباً منظومة تك، أرغب في الاستفسار عن الخدمات")}`;
-      }
-    }
-
-    // جلب البيانات من Google Sheets (Multi-Tab GViz API)
-    async function syncFromGoogleSheets() {
-      if (!GOOGLE_SHEET_URL) return;
-      const match = GOOGLE_SHEET_URL.match(/\/d\/([a-zA-Z0-9-_]+)/);
-      if (!match) return;
-      const sheetId = match[1];
-
+    async function fetchWithTimeout(url, ms = 5000) {
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), ms);
       try {
-        const [plansRes, demosRes, settingsRes] = await Promise.all([
-          fetch(`https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent('الباقات')}`).then(r => r.ok ? r.text() : ""),
-          fetch(`https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent('النماذج')}`).then(r => r.ok ? r.text() : ""),
-          fetch(`https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent('الإعدادات')}`).then(r => r.ok ? r.text() : "")
-        ]);
+        const res = await fetch(url, { signal: controller.signal });
+        clearTimeout(timer);
+        if (!res.ok) return "";
+        const text = await res.text();
+        if (text.includes("<!DOCTYPE html>")) return "";
+        return text;
+      } catch (e) {
+        clearTimeout(timer);
+        return "";
+      }
+    }
 
-        // 1. معالجة الباقات
-        if (plansRes && !plansRes.includes("<!DOCTYPE html>")) {
-          const rows = parseCSV(plansRes);
-          if (rows.length > 1) {
-            appState.plans = rows.slice(1).filter(r => r[1]).map((r, idx) => ({
-              id: r[0] || `plan-${idx}`,
+    async function saveAndSyncSheet() {
+      const url = document.getElementById("adminSheetUrlInput").value.trim();
+      appState.sheetUrl = url;
+      persistState();
+      if (!url) {
+        showToast("تم مسح رابط الشيت");
+        return;
+      }
+      const btn = document.getElementById("syncSheetBtn");
+      btn.textContent = "جاري المزامنة...";
+      btn.disabled = true;
+      await syncFromGoogleSheets(true);
+      btn.textContent = "مزامنة الآن";
+      btn.disabled = false;
+    }
+
+    async function syncFromGoogleSheets(isManual = false) {
+      if (!appState.sheetUrl) return;
+      const match = appState.sheetUrl.match(/\/d\/([a-zA-Z0-9-_]{25,})/);
+      if (!match) {
+        if (isManual) showToast("رابط الشيت غير مكتمل، تأكد من نسخه بالكامل", "⚠️");
+        return;
+      }
+      const sheetId = match[1];
+      const base = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv&sheet=`;
+
+      const [productsRes, demosRes, plansRes, settingsRes] = await Promise.all([
+        fetchWithTimeout(base + encodeURIComponent("المنتجات")),
+        fetchWithTimeout(base + encodeURIComponent("النماذج")),
+        fetchWithTimeout(base + encodeURIComponent("الباقات")),
+        fetchWithTimeout(base + encodeURIComponent("الإعدادات"))
+      ]);
+
+      let updated = false;
+
+      if (productsRes) {
+        const rows = parseCSV(productsRes);
+        if (rows.length > 1) {
+          appState.products = rows.slice(1).filter(r => r[1]).map((r, i) => ({
+            id: `prod-${i}`,
+            tag: r[0] || "منتج ذكي",
+            name: r[1],
+            originalPrice: r[2] || "",
+            price: r[3] || "0",
+            badge: r[4] || "",
+            features: r[5] ? r[5].split("|").map(f => f.trim()).filter(Boolean) : [],
+            icon: r[6] || "nfc",
+            imageUrl: r[7] || ""
+          }));
+          updated = true;
+        }
+      }
+
+      if (demosRes) {
+        const rows = parseCSV(demosRes);
+        if (rows.length > 1) {
+          appState.demos = rows.slice(1).filter(r => r[1]).map(r => ({
+            tag: r[0] || "نموذج مطعم",
+            title: r[1],
+            subtitle: r[2] || "",
+            desc: r[3] || "",
+            url: r[4] || "#demos",
+            color: (r[5] || "emerald").toLowerCase().trim()
+          }));
+          updated = true;
+        }
+      }
+
+      if (plansRes) {
+        const rows = parseCSV(plansRes);
+        if (rows.length > 1) {
+          const headers = rows[0].map(h => h.trim());
+          const hasOrigCols = headers.some(h => h.includes("قبل الخصم"));
+
+          appState.plans = rows.slice(1).filter(r => r[1]).map((r, i) => {
+            if (hasOrigCols) {
+              return {
+                id: r[0] || `plan-${i}`,
+                name: r[1],
+                desc: r[2] || "",
+                annualOriginalPrice: r[3] || "",
+                annualPrice: r[4] || "0",
+                monthlyOriginalPrice: r[5] || "",
+                monthlyPrice: r[6] || "0",
+                features: r[7] ? r[7].split("|").map(f => f.trim()).filter(Boolean) : [],
+                featured: (r[8] || "").includes("نعم")
+              };
+            }
+            return {
+              id: r[0] || `plan-${i}`,
               name: r[1],
               desc: r[2] || "",
+              annualOriginalPrice: "",
               annualPrice: r[3] || "0",
+              monthlyOriginalPrice: "",
               monthlyPrice: r[4] || "0",
               features: r[5] ? r[5].split("|").map(f => f.trim()).filter(Boolean) : [],
               featured: (r[6] || "").includes("نعم")
-            }));
-          }
-        }
-
-        // 2. معالجة النماذج
-        if (demosRes && !demosRes.includes("<!DOCTYPE html>")) {
-          const rows = parseCSV(demosRes);
-          if (rows.length > 1) {
-            appState.demos = rows.slice(1).filter(r => r[1]).map(r => ({
-              tag: r[0] || "نموذج مطعم",
-              title: r[1],
-              subtitle: r[2] || "",
-              desc: r[3] || "",
-              url: r[4] || "#",
-              color: (r[5] || "emerald").toLowerCase().trim()
-            }));
-          }
-        }
-
-        // 3. معالجة الإعدادات
-        if (settingsRes && !settingsRes.includes("<!DOCTYPE html>")) {
-          const rows = parseCSV(settingsRes);
-          rows.slice(1).forEach(r => {
-            const key = (r[0] || "").trim().toLowerCase();
-            const val = (r[1] || "").trim();
-            if (key === "whatsapp_number" && val) appState.whatsapp = val;
-            if (key === "annual_discount_text" && val) {
-              document.getElementById("annualBtn").textContent = val;
-            }
+            };
           });
+          updated = true;
         }
+      }
 
+      if (settingsRes) {
+        const rows = parseCSV(settingsRes);
+        rows.slice(1).forEach(r => {
+          const k = (r[0] || "").trim().toLowerCase();
+          const v = (r[1] || "").trim();
+          if (k === "whatsapp_number" && v) appState.whatsapp = v;
+          if (k === "annual_discount_text" && v) appState.annualDiscountText = v;
+        });
+        updated = true;
+      }
+
+      if (updated) {
+        persistState();
         updateWhatsappLinks();
+        renderProducts();
         renderDemos();
         renderPricing();
-      } catch (err) {
-        console.warn("تم الاعتماد على البيانات الافتراضية:", err);
+        if (isAdminAuthenticated) renderAdminLists();
+        if (isManual) showToast("تمت المزامنة السحابية بنجاح!");
+      } else if (isManual) {
+        showToast("تعذرت القراءة! تأكد أن الشيت متاح (أي شخص لديه الرابط - مشاهد)", "❌");
       }
     }
 
-    // التشغيل عند فتح الصفحة
+    function resetAllDefaults() {
+      localStorage.removeItem(STORAGE_KEY);
+      appState = JSON.parse(JSON.stringify(DEFAULT_STATE));
+      updateWhatsappLinks();
+      renderProducts();
+      renderDemos();
+      renderPricing();
+      renderAdminLists();
+      showToast("تمت استعادة الإعدادات الافتراضية");
+    }
+
+    // =========================================================================
+    // EXPORT UPDATED STANDALONE HTML FILE
+    // =========================================================================
+    function exportUpdatedHTML() {
+      const currentDocHTML = "<!DOCTYPE html>\n" + document.documentElement.outerHTML;
+      const newConfigBlock = `/* === DEFAULT_CONFIG_START === */\n    const DEFAULT_STATE = ${JSON.stringify(appState, null, 2)};\n    /* === DEFAULT_CONFIG_END === */`;
+      const updatedHTML = currentDocHTML.replace(
+        /\/\* === DEFAULT_CONFIG_START === \*\/[\s\S]*?\/\* === DEFAULT_CONFIG_END === \*\//,
+        newConfigBlock
+      );
+
+      const blob = new Blob([updatedHTML], { type: "text/html;charset=utf-8" });
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = "index.html";
+      a.click();
+      URL.revokeObjectURL(a.href);
+      showToast("تم تحميل ملف index.html المحدّث! ارفعه الآن على استضافتك");
+    }
+
+    // Initialize
     document.addEventListener("DOMContentLoaded", () => {
       updateWhatsappLinks();
       renderDemos();
       renderPricing();
-      syncFromGoogleSheets();
+      renderProducts();
+      syncFromGoogleSheets(false);
     });
   </script>
 </body>
